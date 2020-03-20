@@ -1,0 +1,17 @@
+{
+    "name": "MobfishCardboardDemo.UEditor",
+    "references": [
+        "MobfishCardboard.UEditor",
+        "MobfishCardboardDemo"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}
