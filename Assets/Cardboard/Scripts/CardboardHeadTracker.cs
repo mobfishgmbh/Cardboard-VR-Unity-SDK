@@ -27,7 +27,13 @@ namespace MobfishCardboard
             IntPtr head_tracker, double timestamp_ns, float[] position, float[] orientation);
 
         [DllImport(DLLName)]
-        private static extern int CACurrentMediaTime();
+        private static extern void CardboardHeadTracker_pause(IntPtr head_tracker);
+
+        [DllImport(DLLName)]
+        private static extern void CardboardHeadTracker_resume(IntPtr head_tracker);
+
+        [DllImport(DLLName)]
+        private static extern double CACurrentMediaTime();
 
         public static void CreateTracker()
         {
@@ -45,6 +51,16 @@ namespace MobfishCardboard
             CardboardHeadTracker_getPose(_headTracker, time, _position, _orientation);
 
             return new Quaternion(_orientation[0], _orientation[1], _orientation[2], _orientation[3]);
+        }
+
+        public static void PauseTracker()
+        {
+            CardboardHeadTracker_pause(_headTracker);
+        }
+
+        public static void ResumeTracker()
+        {
+            CardboardHeadTracker_resume(_headTracker);
         }
 
 

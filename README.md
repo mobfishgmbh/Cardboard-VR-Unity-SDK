@@ -6,6 +6,8 @@ This is a WIP unofficial Google Cardboard Unity SDK, implemented from new Google
 
 This project is still on early development stage, not yet finished and far from production ready. If you're interested, feel free to make tickets and do Pull Requests.
 
+This project will focus on iOS system first.
+
 Official Google Cardboard SDK:  
 https://github.com/googlevr/cardboard
 
