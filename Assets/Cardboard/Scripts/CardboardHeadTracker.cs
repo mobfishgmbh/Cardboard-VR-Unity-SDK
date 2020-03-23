@@ -16,6 +16,7 @@ namespace MobfishCardboard
         private static readonly Matrix4x4 flipZ = Matrix4x4.Scale(new Vector3(1, 1, -1));
 
         private static IntPtr _headTracker;
+        private static Gyroscope gyro;
 
         public static Vector3 trackerRawPosition { get; private set; }
         public static Quaternion trackerRawRotation { get; private set; }
@@ -43,10 +44,12 @@ namespace MobfishCardboard
 
         public static void CreateTracker()
         {
+            Input.gyro.enabled = true;
+            gyro = Input.gyro;
             _headTracker = CardboardHeadTracker_create();
         }
 
-        public static void UpdatePose()
+        public static void UpdatePoseCardboard()
         {
             double time = CACurrentMediaTime() * 1e9;
             time += kPrediction;
@@ -64,6 +67,14 @@ namespace MobfishCardboard
 
             trackerUnityPosition = unityPoseMat.GetColumn(3);
             trackerUnityRotation = Quaternion.LookRotation(unityPoseMat.GetColumn(2), unityPoseMat.GetColumn(1));
+        }
+
+        public static void UpdatePoseGyro()
+        {
+            trackerRawPosition = trackerUnityPosition = Vector3.zero;
+            trackerRawRotation = gyro.attitude;
+            trackerUnityRotation = Quaternion.Euler(new Vector3(0, 0, 180)) * trackerRawRotation *
+                Quaternion.Euler(new Vector3(90, 180, 0));
         }
 
         public static void PauseTracker()

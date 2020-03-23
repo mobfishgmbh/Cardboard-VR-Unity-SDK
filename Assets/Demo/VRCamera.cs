@@ -27,7 +27,7 @@ public class VRCamera: MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        CardboardHeadTracker.UpdatePose();
+        CardboardHeadTracker.UpdatePoseGyro();
         transform.localRotation = CardboardHeadTracker.trackerUnityRotation;
         Update_DebugInfo();
     }
