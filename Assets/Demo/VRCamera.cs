@@ -3,11 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using MobfishCardboard;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class VRCamera: MonoBehaviour
 {
+    public Button scanQRButton;
+
     private void Awake()
     {
+        scanQRButton.onClick.AddListener(ScanQRCode);
     }
 
     // Start is called before the first frame update
@@ -21,5 +25,10 @@ public class VRCamera: MonoBehaviour
     void Update()
     {
         transform.rotation = CardboardHeadTracker.GetPose();
+    }
+
+    private void ScanQRCode()
+    {
+        CardboardQrCode.StartScanQrCode();
     }
 }

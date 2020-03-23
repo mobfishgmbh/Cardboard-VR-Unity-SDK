@@ -10,29 +10,27 @@ namespace MobfishCardboard
     {
         //https://github.com/googlevr/cardboard/blob/master/hellocardboard-ios/HelloCardboardRenderer.mm
 
-        private const string DLLName = "__Internal";
-
         private const ulong kPrediction = 50000000;
 
         private static IntPtr _headTracker;
 
-        [DllImport(DLLName)]
+        [DllImport(CardboardUtility.DLLName)]
         private static extern IntPtr CardboardHeadTracker_create();
 
-        [DllImport(DLLName)]
+        [DllImport(CardboardUtility.DLLName)]
         private static extern void CardboardHeadTracker_destroy(IntPtr head_tracker);
 
-        [DllImport(DLLName)]
+        [DllImport(CardboardUtility.DLLName)]
         private static extern void CardboardHeadTracker_getPose(
             IntPtr head_tracker, double timestamp_ns, float[] position, float[] orientation);
 
-        [DllImport(DLLName)]
+        [DllImport(CardboardUtility.DLLName)]
         private static extern void CardboardHeadTracker_pause(IntPtr head_tracker);
 
-        [DllImport(DLLName)]
+        [DllImport(CardboardUtility.DLLName)]
         private static extern void CardboardHeadTracker_resume(IntPtr head_tracker);
 
-        [DllImport(DLLName)]
+        [DllImport(CardboardUtility.DLLName)]
         private static extern double CACurrentMediaTime();
 
         public static void CreateTracker()
