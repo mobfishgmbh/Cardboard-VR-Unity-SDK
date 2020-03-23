@@ -413,7 +413,7 @@ PlayerSettings:
   enableInternalProfiler: 0
   logObjCUncaughtExceptions: 1
   enableCrashReportAPI: 0
-  cameraUsageDescription: 
+  cameraUsageDescription: Use Camera to Scan QR Code
   locationUsageDescription: 
   microphoneUsageDescription: 
   switchNetLibKey: 

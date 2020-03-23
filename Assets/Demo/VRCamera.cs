@@ -19,6 +19,7 @@ public class VRCamera: MonoBehaviour
     {
         CardboardHeadTracker.CreateTracker();
         CardboardHeadTracker.ResumeTracker();
+        CardboardQrCode.RetrieveDeviceParam();
     }
 
     // Update is called once per frame
@@ -30,5 +31,6 @@ public class VRCamera: MonoBehaviour
     private void ScanQRCode()
     {
         CardboardQrCode.StartScanQrCode();
+        CardboardQrCode.RetrieveDeviceParam();
     }
 }
