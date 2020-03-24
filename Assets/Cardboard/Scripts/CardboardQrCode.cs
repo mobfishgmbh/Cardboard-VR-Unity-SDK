@@ -31,6 +31,11 @@ namespace MobfishCardboard
             Debug.Log("Feature Test RetrieveDeviceParam paramsStr=" + result);
         }
 
+        public static (IntPtr, int) GetDeviceParamsPointer()
+        {
+            return (_encodedDeviceParams, _paramsSize);
+        }
+
         private static char[] ReadCharArray(IntPtr pointer, int size)
         {
             var result = new char[size];

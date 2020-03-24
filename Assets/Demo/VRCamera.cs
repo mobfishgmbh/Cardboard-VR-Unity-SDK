@@ -8,12 +8,20 @@ using UnityEngine.UI;
 
 public class VRCamera: MonoBehaviour
 {
+    [Header("Cameras")]
+    public Camera leftCam;
+    public Camera rightCam;
+
+    [Header("Other")]
     public Button scanQRButton;
     public Text debugText;
+    public MeshFilter leftEyeMesh;
+    public MeshFilter rightEyeMesh;
 
     private void Awake()
     {
         scanQRButton.onClick.AddListener(ScanQRCode);
+        Application.targetFrameRate = 60;
     }
 
     // Start is called before the first frame update
@@ -22,6 +30,17 @@ public class VRCamera: MonoBehaviour
         CardboardHeadTracker.CreateTracker();
         CardboardHeadTracker.ResumeTracker();
         CardboardQrCode.RetrieveDeviceParam();
+        (IntPtr, int) par = CardboardQrCode.GetDeviceParamsPointer();
+        CardboardLensDistortion.CreateLensDistortion(par.Item1, par.Item2);
+        RefreshCamera();
+    }
+
+    private void RefreshCamera()
+    {
+        leftCam.projectionMatrix = CardboardLensDistortion.GetProjectionMatrix(CardboardEye.kLeft);
+        rightCam.projectionMatrix = CardboardLensDistortion.GetProjectionMatrix(CardboardEye.kRight);
+        leftEyeMesh.mesh = CardboardLensDistortion.GetDistortionMesh(CardboardEye.kLeft);
+        rightEyeMesh.mesh = CardboardLensDistortion.GetDistortionMesh(CardboardEye.kRight);
     }
 
     // Update is called once per frame
@@ -43,5 +62,6 @@ public class VRCamera: MonoBehaviour
     {
         CardboardQrCode.StartScanQrCode();
         CardboardQrCode.RetrieveDeviceParam();
+        RefreshCamera();
     }
 }
