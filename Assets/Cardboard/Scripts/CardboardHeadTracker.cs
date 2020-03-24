@@ -11,6 +11,7 @@ namespace MobfishCardboard
         //https://github.com/googlevr/cardboard/blob/master/hellocardboard-ios/HelloCardboardRenderer.mm
         //https://github.com/googlevr/gvr-unity-sdk/blob/v0.8.1/GoogleVR/Scripts/Pose3D.cs
         //https://github.com/googlevr/gvr-unity-sdk/blob/v0.8.1/GoogleVR/Scripts/VRDevices/GvrDevice.cs
+        //https://gamedev.stackexchange.com/questions/174107/unity-gyroscope-orientation-attitude-wrong
 
         private const ulong kPrediction = 50000000;
         private static readonly Matrix4x4 flipZ = Matrix4x4.Scale(new Vector3(1, 1, -1));
@@ -59,6 +60,7 @@ namespace MobfishCardboard
 
             CardboardHeadTracker_getPose(_headTracker, time, _position, _orientation);
 
+            //Need help, reading from _orientation is not normal.
             trackerRawPosition = new Vector3(_position[0], _position[1], _position[2]);
             trackerRawRotation = new Quaternion(_orientation[0], _orientation[1], _orientation[2], _orientation[3]);
 
@@ -73,8 +75,9 @@ namespace MobfishCardboard
         {
             trackerRawPosition = trackerUnityPosition = Vector3.zero;
             trackerRawRotation = gyro.attitude;
-            trackerUnityRotation = Quaternion.Euler(new Vector3(0, 0, 180)) * trackerRawRotation *
-                Quaternion.Euler(new Vector3(90, 180, 0));
+            Quaternion rawConvert = new Quaternion(trackerRawRotation.x, trackerRawRotation.y, -trackerRawRotation.z,
+                -trackerRawRotation.w);
+            trackerUnityRotation = Quaternion.Euler(90, 0, 0) * rawConvert;
         }
 
         public static void PauseTracker()
