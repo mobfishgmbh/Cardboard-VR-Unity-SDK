@@ -12,6 +12,9 @@ namespace MobfishCardboard
 
         private static IntPtr _lensDistortion;
 
+        private static IntPtr leftEyeMesh;
+        private static IntPtr rightEyeMesh;
+
         [DllImport(CardboardUtility.DLLName)]
         private static extern IntPtr CardboardLensDistortion_create(
             IntPtr encoded_device_params, int size, int display_width, int display_height);
@@ -20,9 +23,9 @@ namespace MobfishCardboard
         private static extern void CardboardLensDistortion_destroy(IntPtr lens_Distortion);
 
         //todo is this correct?
-        [DllImport(CardboardUtility.DLLName)]
+        [DllImport(CardboardUtility.DLLName, CallingConvention = CallingConvention.Cdecl)]
         private static extern void CardboardLensDistortion_getDistortionMesh(
-            IntPtr lens_Distortion, CardboardEye eye, ref CardboardMesh mesh);
+            IntPtr lens_Distortion, CardboardEye eye, ref IntPtr mesh);
 
         [DllImport(CardboardUtility.DLLName)]
         private static extern void CardboardLensDistortion_getEyeMatrices(
@@ -42,11 +45,19 @@ namespace MobfishCardboard
                 encoded_device_params, params_size, Screen.width, Screen.height);
         }
 
-        public static Mesh GetDistortionMesh(CardboardEye eye)
+        // public static void GetDistortionMesh(CardboardEye eye)
+        // {
+        //     CardboardMesh result = new CardboardMesh();
+        //     CardboardLensDistortion_getDistortionMesh(_lensDistortion, eye, ref result);
+        //     Debug.Log("Feature Test CardboardLensDistortion.GetDistortionMesh() result n_indics=" +
+        //         result.n_indices + " n_vertices=" + result.n_vertices);
+        //     // return CardboardUtility.ConvertCardboardMesh(result);
+        // }
+
+        public static void RetrieveEyeMeshes()
         {
-            CardboardMesh result = new CardboardMesh();
-            CardboardLensDistortion_getDistortionMesh(_lensDistortion, eye, ref result);
-            return CardboardUtility.ConvertCardboardMesh(result);
+            CardboardLensDistortion_getDistortionMesh(_lensDistortion, CardboardEye.kLeft, ref leftEyeMesh);
+            CardboardLensDistortion_getDistortionMesh(_lensDistortion, CardboardEye.kRight, ref rightEyeMesh);
         }
 
         public static Matrix4x4 GetProjectionMatrix(CardboardEye eye)
