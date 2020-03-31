@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
 
-public class VRCamera: MonoBehaviour
+public class VRCamera : MonoBehaviour
 {
     [Header("Cameras")]
     public Camera centerCam;
@@ -30,15 +30,12 @@ public class VRCamera: MonoBehaviour
             dimension = TextureDimension.Tex2D,
             width = Screen.width / 2,
             height = Screen.height / 2,
-            depthBufferBits = 16
+            depthBufferBits = 16,
+            volumeDepth = 1,
+            msaaSamples = 2
         };
         centerRenderTexture = new RenderTexture(eyeRenderTextureDesc);
         centerCam.targetTexture = centerRenderTexture;
-    }
-
-    private void OnPostRender()
-    {
-
     }
 
     // Start is called before the first frame update
@@ -53,10 +50,29 @@ public class VRCamera: MonoBehaviour
         RefreshCamera();
     }
 
+    private void DoRenderTest()
+    {
+        CardboardEyeTextureDescription cetdLeft = new CardboardEyeTextureDescription()
+        {
+            texture = centerRenderTexture.GetNativeTexturePtr(),
+            eye_from_head = CardboardLensDistortion.GetEyeFromHeadRaw(CardboardEye.kLeft),
+            left_u = 0,
+            right_u = 1,
+            bottom_v = 0,
+            top_v = 1,
+            layer = 0
+        };
+        CardboardDistortionRenderer.RenderEyeToDisplay(cetdLeft, cetdLeft);
+    }
+
     private void RefreshCamera()
     {
+        CardboardLensDistortion.RetrieveEyeMeshes();
+        CardboardLensDistortion.RefreshProjectionMatrix();
         leftCam.projectionMatrix = CardboardLensDistortion.GetProjectionMatrix(CardboardEye.kLeft);
         rightCam.projectionMatrix = CardboardLensDistortion.GetProjectionMatrix(CardboardEye.kRight);
+        (CardboardMesh, CardboardMesh) eyeMeshes = CardboardLensDistortion.GetEyeMeshes();
+        CardboardDistortionRenderer.SetEyeMeshes(eyeMeshes.Item1, eyeMeshes.Item2);
     }
 
     // Update is called once per frame

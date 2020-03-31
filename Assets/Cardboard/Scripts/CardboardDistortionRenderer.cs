@@ -16,9 +16,10 @@ namespace MobfishCardboard
         [DllImport(CardboardUtility.DLLName)]
         private static extern IntPtr CardboardDistortionRenderer_destroy(IntPtr renderer);
 
+        //todo is this correct?
         [DllImport(CardboardUtility.DLLName)]
         private static extern void CardboardDistortionRenderer_setMesh(
-            IntPtr renderer, IntPtr mesh, CardboardEye eye);
+            IntPtr renderer, ref CardboardMesh mesh, CardboardEye eye);
 
         [DllImport(CardboardUtility.DLLName)]
         private static extern void CardboardDestortionRenderer_renderEyeToDisplay(IntPtr renderer,
@@ -30,10 +31,10 @@ namespace MobfishCardboard
             _cardboardDistortionRenderer = CardboardDistortionRenderer_create();
         }
 
-        public static void SetEyeMeshes(IntPtr leftMeshPtr, IntPtr rightMeshPtr)
+        public static void SetEyeMeshes(CardboardMesh leftMeshPtr, CardboardMesh rightMeshPtr)
         {
-            CardboardDistortionRenderer_setMesh(_cardboardDistortionRenderer, leftMeshPtr, CardboardEye.kLeft);
-            CardboardDistortionRenderer_setMesh(_cardboardDistortionRenderer, rightMeshPtr, CardboardEye.kRight);
+            CardboardDistortionRenderer_setMesh(_cardboardDistortionRenderer, ref leftMeshPtr, CardboardEye.kLeft);
+            CardboardDistortionRenderer_setMesh(_cardboardDistortionRenderer, ref rightMeshPtr, CardboardEye.kRight);
         }
 
         public static void RenderEyeToDisplay(

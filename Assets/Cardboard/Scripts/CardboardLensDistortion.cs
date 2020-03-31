@@ -12,8 +12,13 @@ namespace MobfishCardboard
 
         private static IntPtr _lensDistortion;
 
-        private static IntPtr leftEyeMesh;
-        private static IntPtr rightEyeMesh;
+        private static CardboardMesh leftEyeMesh;
+        private static CardboardMesh rightEyeMesh;
+
+        private static float[] projectionMatrixLeft;
+        private static float[] projectionMatrixRight;
+        private static float[] eyeFromHeadMatrixLeft;
+        private static float[] eyeFromHeadMatrixRight;
 
         [DllImport(CardboardUtility.DLLName)]
         private static extern IntPtr CardboardLensDistortion_create(
@@ -25,7 +30,7 @@ namespace MobfishCardboard
         //todo is this correct?
         [DllImport(CardboardUtility.DLLName, CallingConvention = CallingConvention.Cdecl)]
         private static extern void CardboardLensDistortion_getDistortionMesh(
-            IntPtr lens_Distortion, CardboardEye eye, ref IntPtr mesh);
+            IntPtr lens_Distortion, CardboardEye eye, ref CardboardMesh mesh);
 
         [DllImport(CardboardUtility.DLLName)]
         private static extern void CardboardLensDistortion_getEyeMatrices(
@@ -56,22 +61,72 @@ namespace MobfishCardboard
 
         public static void RetrieveEyeMeshes()
         {
+            //CardboardMesh tempA = new CardboardMesh();
+            //GCHandle tempAGch = GCHandle.Alloc(tempA);
+            //CardboardMesh tempB = new CardboardMesh();
+            //GCHandle tempBGch = GCHandle.Alloc(tempB);
+            //leftEyeMesh = GCHandle.ToIntPtr(tempAGch);
+            //rightEyeMesh = GCHandle.ToIntPtr(tempBGch);
+
             CardboardLensDistortion_getDistortionMesh(_lensDistortion, CardboardEye.kLeft, ref leftEyeMesh);
             CardboardLensDistortion_getDistortionMesh(_lensDistortion, CardboardEye.kRight, ref rightEyeMesh);
+
+            //tempAGch.Free();
+            //tempBGch.Free();
+        }
+
+        public static (CardboardMesh, CardboardMesh) GetEyeMeshes()
+        {
+            return (leftEyeMesh, rightEyeMesh);
+        }
+
+        public static void RefreshProjectionMatrix()
+        {
+            projectionMatrixLeft = new float[16];
+            eyeFromHeadMatrixLeft = new float[16];
+            projectionMatrixRight = new float[16];
+            eyeFromHeadMatrixRight = new float[16];
+            CardboardLensDistortion_getEyeMatrices(_lensDistortion, projectionMatrixLeft, eyeFromHeadMatrixLeft, CardboardEye.kLeft);
+            CardboardLensDistortion_getEyeMatrices(_lensDistortion, projectionMatrixRight, eyeFromHeadMatrixRight, CardboardEye.kRight);
         }
 
         public static Matrix4x4 GetProjectionMatrix(CardboardEye eye)
         {
-            float[] projectionMatrix = new float[16];
-            float[] eyeFromHeadMatrix = new float[16];
-            CardboardLensDistortion_getEyeMatrices(_lensDistortion, projectionMatrix, eyeFromHeadMatrix, eye);
+            if (projectionMatrixLeft == null || projectionMatrixRight == null)
+                RefreshProjectionMatrix();
 
             Matrix4x4 result = new Matrix4x4();
-            for (int i = 0; i < projectionMatrix.Length; i++)
+
+            float[] targetMatrix = eye == CardboardEye.kLeft ? projectionMatrixLeft : projectionMatrixRight;
+            for (int i = 0; i < targetMatrix.Length; i++)
             {
-                result[i] = projectionMatrix[i];
+                result[i] = targetMatrix[i];
             }
             return result;
+        }
+
+        public static Matrix4x4 GetEyeFromHeadMatrix(CardboardEye eye)
+        {
+            if (eyeFromHeadMatrixLeft == null || eyeFromHeadMatrixRight == null)
+                RefreshProjectionMatrix();
+
+            Matrix4x4 result = new Matrix4x4();
+
+            float[] targetMatrix = eye == CardboardEye.kLeft ? eyeFromHeadMatrixLeft : eyeFromHeadMatrixRight;
+            for (int i = 0; i < targetMatrix.Length; i++)
+            {
+                result[i] = targetMatrix[i];
+            }
+            return result;
+        }
+
+
+        public static float[] GetEyeFromHeadRaw(CardboardEye eye)
+        {
+            if (eyeFromHeadMatrixLeft == null || eyeFromHeadMatrixRight == null)
+                RefreshProjectionMatrix();
+
+            return eye == CardboardEye.kLeft ? eyeFromHeadMatrixLeft : eyeFromHeadMatrixRight;
         }
     }
 }
