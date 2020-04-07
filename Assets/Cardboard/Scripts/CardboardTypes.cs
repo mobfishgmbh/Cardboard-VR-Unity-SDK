@@ -18,11 +18,16 @@ namespace MobfishCardboard
     [StructLayout(LayoutKind.Sequential)]
     public struct CardboardMesh
     {
+        [MarshalAs(UnmanagedType.LPArray,
+            SizeConst = (2 * CardboardUtility.kResolution * (CardboardUtility.kResolution - 1) + CardboardUtility.kResolution - 2),
+            ArraySubType = UnmanagedType.I4)]
         public int[] indices;
         public int n_indices;
         //one dim array, 2 floats per vertex: x, y.
+        [MarshalAs(UnmanagedType.LPArray, SizeConst = 2 * CardboardUtility.kResolution * CardboardUtility.kResolution, ArraySubType = UnmanagedType.R4)]
         public float[] vertices;
         //one dim array, 2 floats per uv: u, v.
+        [MarshalAs(UnmanagedType.LPArray, SizeConst = 2 * CardboardUtility.kResolution * CardboardUtility.kResolution, ArraySubType = UnmanagedType.R4)]
         public float[] uvs;
         public int n_vertices;
     }

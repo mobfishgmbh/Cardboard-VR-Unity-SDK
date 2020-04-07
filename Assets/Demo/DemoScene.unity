@@ -1231,6 +1231,8 @@ MonoBehaviour:
   rightCam: {fileID: 354477576}
   scanQRButton: {fileID: 1646135265}
   debugText: {fileID: 1030967910}
+  testEyeMeshLeft: {fileID: 679122516}
+  testEyeMeshRight: {fileID: 1141839437}
 --- !u!1 &1490041650
 GameObject:
   m_ObjectHideFlags: 0

@@ -73,6 +73,10 @@ namespace MobfishCardboard
 
             //tempAGch.Free();
             //tempBGch.Free();
+
+            Debug.Log("Feature Test CardboardLensDistortion.GetDistortionMesh() result leftEye n_indics=" +
+                leftEyeMesh.n_indices + " n_vertices=" + leftEyeMesh.n_vertices +
+                " actual indics=" + leftEyeMesh.indices.Length + " actual vertices=" + rightEyeMesh.vertices.Length);
         }
 
         public static (CardboardMesh, CardboardMesh) GetEyeMeshes()

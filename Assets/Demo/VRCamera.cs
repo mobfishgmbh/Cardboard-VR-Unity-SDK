@@ -17,6 +17,8 @@ public class VRCamera : MonoBehaviour
     [Header("Other")]
     public Button scanQRButton;
     public Text debugText;
+    public MeshFilter testEyeMeshLeft;
+    public MeshFilter testEyeMeshRight;
 
     private RenderTextureDescriptor eyeRenderTextureDesc;
     private RenderTexture centerRenderTexture;
@@ -73,6 +75,8 @@ public class VRCamera : MonoBehaviour
         rightCam.projectionMatrix = CardboardLensDistortion.GetProjectionMatrix(CardboardEye.kRight);
         (CardboardMesh, CardboardMesh) eyeMeshes = CardboardLensDistortion.GetEyeMeshes();
         CardboardDistortionRenderer.SetEyeMeshes(eyeMeshes.Item1, eyeMeshes.Item2);
+        testEyeMeshLeft.mesh = CardboardUtility.ConvertCardboardMesh(eyeMeshes.Item1);
+        testEyeMeshRight.mesh = CardboardUtility.ConvertCardboardMesh(eyeMeshes.Item2);
     }
 
     // Update is called once per frame
