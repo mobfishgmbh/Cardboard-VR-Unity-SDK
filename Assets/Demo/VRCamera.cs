@@ -22,6 +22,7 @@ public class VRCamera : MonoBehaviour
 
     private RenderTextureDescriptor eyeRenderTextureDesc;
     private RenderTexture centerRenderTexture;
+    private bool needUpdateProfile;
 
     private void Awake()
     {
@@ -87,6 +88,22 @@ public class VRCamera : MonoBehaviour
         Update_DebugInfo();
     }
 
+    private void OnApplicationFocus(bool hasFocus)
+    {
+        Debug.Log("OnApplicationFocus called, hasFocus="+hasFocus);
+
+        CardboardQrCode.RetrieveDeviceParam();
+        CardboardLensDistortion.DestroyLensDistortion();
+        (IntPtr, int) par = CardboardQrCode.GetDeviceParamsPointer();
+        CardboardLensDistortion.CreateLensDistortion(par.Item1, par.Item2);
+        RefreshCamera();
+    }
+
+    private void OnApplicationPause(bool pauseStatus)
+    {
+        Debug.Log("OnApplicationPause called, pauseStatus="+pauseStatus);
+    }
+
     void Update_DebugInfo()
     {
         debugText.text = string.Format("device rot={0}, \r\nUnity rot={1}",
@@ -97,7 +114,6 @@ public class VRCamera : MonoBehaviour
     private void ScanQRCode()
     {
         CardboardQrCode.StartScanQrCode();
-        CardboardQrCode.RetrieveDeviceParam();
-        RefreshCamera();
+        needUpdateProfile = true;
     }
 }

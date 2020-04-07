@@ -50,6 +50,11 @@ namespace MobfishCardboard
                 encoded_device_params, params_size, Screen.width, Screen.height);
         }
 
+        public static void DestroyLensDistortion()
+        {
+            CardboardLensDistortion_destroy(_lensDistortion);
+        }
+
         // public static void GetDistortionMesh(CardboardEye eye)
         // {
         //     CardboardMesh result = new CardboardMesh();
@@ -61,6 +66,7 @@ namespace MobfishCardboard
 
         public static void RetrieveEyeMeshes()
         {
+            //todo during scan qr, malloc error, something not freed here?
             //CardboardMesh tempA = new CardboardMesh();
             //GCHandle tempAGch = GCHandle.Alloc(tempA);
             //CardboardMesh tempB = new CardboardMesh();
