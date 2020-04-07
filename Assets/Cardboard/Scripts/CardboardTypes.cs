@@ -15,6 +15,7 @@ namespace MobfishCardboard
         public float v;
     }
 
+    //https://github.com/googlevr/cardboard/blob/master/sdk/distortion_mesh.cc
     [StructLayout(LayoutKind.Sequential)]
     public struct CardboardMesh
     {
