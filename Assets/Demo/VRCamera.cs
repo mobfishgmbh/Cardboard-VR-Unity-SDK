@@ -14,8 +14,12 @@ public class VRCamera : MonoBehaviour
     public Camera leftCam;
     public Camera rightCam;
 
-    [Header("Other")]
+    [Header("QR")]
     public Button scanQRButton;
+    public Button continueButton;
+    public GameObject continuePanel;
+
+    [Header("Other")]
     public Text debugText;
     public MeshFilter testEyeMeshLeft;
     public MeshFilter testEyeMeshRight;
@@ -26,7 +30,6 @@ public class VRCamera : MonoBehaviour
 
     private void Awake()
     {
-        scanQRButton.onClick.AddListener(ScanQRCode);
         Application.targetFrameRate = 60;
         eyeRenderTextureDesc = new RenderTextureDescriptor()
         {
@@ -39,6 +42,10 @@ public class VRCamera : MonoBehaviour
         };
         centerRenderTexture = new RenderTexture(eyeRenderTextureDesc);
         centerCam.targetTexture = centerRenderTexture;
+
+        continuePanel.SetActive(false);
+        continueButton.onClick.AddListener(ContinueClicked);
+        scanQRButton.onClick.AddListener(ScanQRCode);
     }
 
     // Start is called before the first frame update
@@ -46,11 +53,26 @@ public class VRCamera : MonoBehaviour
     {
         CardboardHeadTracker.CreateTracker();
         CardboardHeadTracker.ResumeTracker();
-        CardboardQrCode.RetrieveDeviceParam();
         CardboardDistortionRenderer.InitDestortionRenderer();
+
+        ResetProfile();
+    }
+
+    private void ResetProfile()
+    {
+        CardboardQrCode.RetrieveDeviceParam();
         (IntPtr, int) par = CardboardQrCode.GetDeviceParamsPointer();
+        //CardboardLensDistortion.DestroyLensDistortion();
         CardboardLensDistortion.CreateLensDistortion(par.Item1, par.Item2);
         RefreshCamera();
+
+        needUpdateProfile = false;
+    }
+
+    private void ContinueClicked()
+    {
+        continuePanel.SetActive(false);
+        ResetProfile();
     }
 
     private void DoRenderTest()
@@ -91,12 +113,6 @@ public class VRCamera : MonoBehaviour
     private void OnApplicationFocus(bool hasFocus)
     {
         Debug.Log("OnApplicationFocus called, hasFocus="+hasFocus);
-
-        CardboardQrCode.RetrieveDeviceParam();
-        CardboardLensDistortion.DestroyLensDistortion();
-        (IntPtr, int) par = CardboardQrCode.GetDeviceParamsPointer();
-        CardboardLensDistortion.CreateLensDistortion(par.Item1, par.Item2);
-        RefreshCamera();
     }
 
     private void OnApplicationPause(bool pauseStatus)
@@ -115,5 +131,6 @@ public class VRCamera : MonoBehaviour
     {
         CardboardQrCode.StartScanQrCode();
         needUpdateProfile = true;
+        continuePanel.SetActive(true);
     }
 }

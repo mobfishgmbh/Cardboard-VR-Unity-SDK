@@ -27,13 +27,9 @@ namespace MobfishCardboard
             CardboardQrCode_getSavedDeviceParams(ref _encodedDeviceParams, ref _paramsSize);
 
             Debug.Log("Feature Test RetrieveDeviceParam size=" + _paramsSize);
-            char[] charArray = ReadCharArray(_encodedDeviceParams, _paramsSize);
-            string result = new string(charArray);
-            Debug.Log("Feature Test RetrieveDeviceParam paramsStr=" + result);
+            byte[] dataArray = ReadByteArray(_encodedDeviceParams, _paramsSize);
+            Debug.Log("Feature Test RetrieveDeviceParam params byte=\r\n " + string.Join(" , ", dataArray));
 
-            float[] floatArray = ReadFloatArray(_encodedDeviceParams, 13);
-            string result2 = string.Join(" , ", floatArray);
-            Debug.Log("Feature Test RetrieveDeviceParam params float=" + result2);
         }
 
         public static (IntPtr, int) GetDeviceParamsPointer()
@@ -41,18 +37,12 @@ namespace MobfishCardboard
             return (_encodedDeviceParams, _paramsSize);
         }
 
-        private static char[] ReadCharArray(IntPtr pointer, int size)
+        private static byte[] ReadByteArray(IntPtr pointer, int size)
         {
-            var result = new char[size];
+            var result = new byte[size];
             Marshal.Copy(pointer, result, 0, size);
             return result;
         }
 
-        private static float[] ReadFloatArray(IntPtr pointer, int size)
-        {
-            var result = new float[size];
-            Marshal.Copy(pointer, result, 0, size);
-            return result;
-        }
     }
 }
