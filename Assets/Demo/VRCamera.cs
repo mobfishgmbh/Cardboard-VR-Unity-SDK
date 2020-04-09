@@ -100,6 +100,9 @@ public class VRCamera : MonoBehaviour
         CardboardDistortionRenderer.SetEyeMeshes(eyeMeshes.Item1, eyeMeshes.Item2);
         testEyeMeshLeft.mesh = CardboardUtility.ConvertCardboardMesh(eyeMeshes.Item1);
         testEyeMeshRight.mesh = CardboardUtility.ConvertCardboardMesh(eyeMeshes.Item2);
+
+        NativeDataExtract.Save_MeshJson(eyeMeshes.Item1);
+        NativeDataExtract.Save_MeshJson(eyeMeshes.Item2);
     }
 
     // Update is called once per frame
