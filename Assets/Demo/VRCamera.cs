@@ -7,143 +7,146 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
 
-public class VRCamera : MonoBehaviour
+namespace MobfishCardboardDemo
 {
-    [Header("Cameras")]
-    public Camera centerCam;
-    public Camera leftCam;
-    public Camera rightCam;
-
-    [Header("QR")]
-    public Button scanQRButton;
-    public Button continueButton;
-    public GameObject continuePanel;
-
-    [Header("Other")]
-    public Text debugText;
-    public MeshFilter testEyeMeshLeft;
-    public MeshFilter testEyeMeshRight;
-
-    private RenderTextureDescriptor eyeRenderTextureDesc;
-    private RenderTexture centerRenderTexture;
-    private bool needUpdateProfile;
-
-    private void Awake()
+    public class VRCamera: MonoBehaviour
     {
-        Application.targetFrameRate = 60;
-        eyeRenderTextureDesc = new RenderTextureDescriptor()
+        [Header("Cameras")]
+        public Camera centerCam;
+        public Camera leftCam;
+        public Camera rightCam;
+
+        [Header("QR")]
+        public Button scanQRButton;
+        public Button continueButton;
+        public GameObject continuePanel;
+
+        [Header("Other")]
+        public Text debugText;
+        public MeshFilter testEyeMeshLeft;
+        public MeshFilter testEyeMeshRight;
+
+        private RenderTextureDescriptor eyeRenderTextureDesc;
+        private RenderTexture centerRenderTexture;
+        private bool needUpdateProfile;
+
+        private void Awake()
         {
-            dimension = TextureDimension.Tex2D,
-            width = Screen.width / 2,
-            height = Screen.height / 2,
-            depthBufferBits = 16,
-            volumeDepth = 1,
-            msaaSamples = 2
-        };
-        centerRenderTexture = new RenderTexture(eyeRenderTextureDesc);
-        centerCam.targetTexture = centerRenderTexture;
+            Application.targetFrameRate = 60;
+            eyeRenderTextureDesc = new RenderTextureDescriptor()
+            {
+                dimension = TextureDimension.Tex2D,
+                width = Screen.width / 2,
+                height = Screen.height / 2,
+                depthBufferBits = 16,
+                volumeDepth = 1,
+                msaaSamples = 2
+            };
+            centerRenderTexture = new RenderTexture(eyeRenderTextureDesc);
+            centerCam.targetTexture = centerRenderTexture;
 
-        continuePanel.SetActive(false);
-        continueButton.onClick.AddListener(ContinueClicked);
-        scanQRButton.onClick.AddListener(ScanQRCode);
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        CardboardHeadTracker.CreateTracker();
-        CardboardHeadTracker.ResumeTracker();
-        CardboardDistortionRenderer.InitDestortionRenderer();
-
-        ResetProfile();
-    }
-
-    private void ResetProfile()
-    {
-        CardboardQrCode.RetrieveDeviceParam();
-        (IntPtr, int) par = CardboardQrCode.GetDeviceParamsPointer();
-
-        if(par.Item2==0)
-        {
-            ScanQRCode();
-            return;
+            continuePanel.SetActive(false);
+            continueButton.onClick.AddListener(ContinueClicked);
+            scanQRButton.onClick.AddListener(ScanQRCode);
         }
 
-        //CardboardLensDistortion.DestroyLensDistortion();
-        CardboardLensDistortion.CreateLensDistortion(par.Item1, par.Item2);
-        RefreshCamera();
-
-        needUpdateProfile = false;
-
-        (byte[], int) paramDetailVar = CardboardQrCode.GetDeviceParamsByte();
-        NativeDataExtract.Save_EncodedParam(paramDetailVar.Item1, paramDetailVar.Item2);
-    }
-
-    private void ContinueClicked()
-    {
-        continuePanel.SetActive(false);
-        ResetProfile();
-    }
-
-    private void DoRenderTest()
-    {
-        CardboardEyeTextureDescription cetdLeft = new CardboardEyeTextureDescription()
+        // Start is called before the first frame update
+        void Start()
         {
-            texture = centerRenderTexture.GetNativeTexturePtr(),
-            eye_from_head = CardboardLensDistortion.GetEyeFromHeadRaw(CardboardEye.kLeft),
-            left_u = 0,
-            right_u = 1,
-            bottom_v = 0,
-            top_v = 1,
-            layer = 0
-        };
-        CardboardDistortionRenderer.RenderEyeToDisplay(cetdLeft, cetdLeft);
-    }
+            CardboardHeadTracker.CreateTracker();
+            CardboardHeadTracker.ResumeTracker();
+            CardboardDistortionRenderer.InitDestortionRenderer();
 
-    private void RefreshCamera()
-    {
-        CardboardLensDistortion.RetrieveEyeMeshes();
-        CardboardLensDistortion.RefreshProjectionMatrix();
-        leftCam.projectionMatrix = CardboardLensDistortion.GetProjectionMatrix(CardboardEye.kLeft);
-        rightCam.projectionMatrix = CardboardLensDistortion.GetProjectionMatrix(CardboardEye.kRight);
-        (CardboardMesh, CardboardMesh) eyeMeshes = CardboardLensDistortion.GetEyeMeshes();
-        CardboardDistortionRenderer.SetEyeMeshes(eyeMeshes.Item1, eyeMeshes.Item2);
-        testEyeMeshLeft.mesh = CardboardUtility.ConvertCardboardMesh_LineStrip(eyeMeshes.Item1);
-        testEyeMeshRight.mesh = CardboardUtility.ConvertCardboardMesh_LineStrip(eyeMeshes.Item2);
+            ResetProfile();
+        }
 
-        NativeDataExtract.Save_MeshJson(eyeMeshes.Item1);
-        NativeDataExtract.Save_MeshJson(eyeMeshes.Item2);
-    }
+        private void ResetProfile()
+        {
+            CardboardQrCode.RetrieveDeviceParam();
+            (IntPtr, int) par = CardboardQrCode.GetDeviceParamsPointer();
 
-    // Update is called once per frame
-    void Update()
-    {
-        CardboardHeadTracker.UpdatePoseGyro();
-        transform.localRotation = CardboardHeadTracker.trackerUnityRotation;
-        Update_DebugInfo();
-    }
+            if (par.Item2 == 0)
+            {
+                ScanQRCode();
+                return;
+            }
 
-    private void OnApplicationFocus(bool hasFocus)
-    {
-        Debug.Log("OnApplicationFocus called, hasFocus="+hasFocus);
-    }
+            //CardboardLensDistortion.DestroyLensDistortion();
+            CardboardLensDistortion.CreateLensDistortion(par.Item1, par.Item2);
+            RefreshCamera();
 
-    private void OnApplicationPause(bool pauseStatus)
-    {
-        Debug.Log("OnApplicationPause called, pauseStatus="+pauseStatus);
-    }
+            needUpdateProfile = false;
 
-    void Update_DebugInfo()
-    {
-        debugText.text = string.Format("device rot={0}, \r\nUnity rot={1}",
-            CardboardHeadTracker.trackerRawRotation.eulerAngles,
-            CardboardHeadTracker.trackerUnityRotation.eulerAngles);
-    }
+            (byte[], int) paramDetailVar = CardboardQrCode.GetDeviceParamsByte();
+            NativeDataExtract.Save_EncodedParam(paramDetailVar.Item1, paramDetailVar.Item2);
+        }
 
-    private void ScanQRCode()
-    {
-        CardboardQrCode.StartScanQrCode();
-        needUpdateProfile = true;
-        continuePanel.SetActive(true);
+        private void ContinueClicked()
+        {
+            continuePanel.SetActive(false);
+            ResetProfile();
+        }
+
+        private void DoRenderTest()
+        {
+            CardboardEyeTextureDescription cetdLeft = new CardboardEyeTextureDescription()
+            {
+                texture = centerRenderTexture.GetNativeTexturePtr(),
+                eye_from_head = CardboardLensDistortion.GetEyeFromHeadRaw(CardboardEye.kLeft),
+                left_u = 0,
+                right_u = 1,
+                bottom_v = 0,
+                top_v = 1,
+                layer = 0
+            };
+            CardboardDistortionRenderer.RenderEyeToDisplay(cetdLeft, cetdLeft);
+        }
+
+        private void RefreshCamera()
+        {
+            CardboardLensDistortion.RetrieveEyeMeshes();
+            CardboardLensDistortion.RefreshProjectionMatrix();
+            leftCam.projectionMatrix = CardboardLensDistortion.GetProjectionMatrix(CardboardEye.kLeft);
+            rightCam.projectionMatrix = CardboardLensDistortion.GetProjectionMatrix(CardboardEye.kRight);
+            (CardboardMesh, CardboardMesh) eyeMeshes = CardboardLensDistortion.GetEyeMeshes();
+            CardboardDistortionRenderer.SetEyeMeshes(eyeMeshes.Item1, eyeMeshes.Item2);
+            testEyeMeshLeft.mesh = CardboardUtility.ConvertCardboardMesh_LineStrip(eyeMeshes.Item1);
+            testEyeMeshRight.mesh = CardboardUtility.ConvertCardboardMesh_LineStrip(eyeMeshes.Item2);
+
+            NativeDataExtract.Save_MeshJson(eyeMeshes.Item1);
+            NativeDataExtract.Save_MeshJson(eyeMeshes.Item2);
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+            CardboardHeadTracker.UpdatePoseGyro();
+            transform.localRotation = CardboardHeadTracker.trackerUnityRotation;
+            Update_DebugInfo();
+        }
+
+        private void OnApplicationFocus(bool hasFocus)
+        {
+            Debug.Log("OnApplicationFocus called, hasFocus=" + hasFocus);
+        }
+
+        private void OnApplicationPause(bool pauseStatus)
+        {
+            Debug.Log("OnApplicationPause called, pauseStatus=" + pauseStatus);
+        }
+
+        void Update_DebugInfo()
+        {
+            debugText.text = string.Format("device rot={0}, \r\nUnity rot={1}",
+                CardboardHeadTracker.trackerRawRotation.eulerAngles,
+                CardboardHeadTracker.trackerUnityRotation.eulerAngles);
+        }
+
+        private void ScanQRCode()
+        {
+            CardboardQrCode.StartScanQrCode();
+            needUpdateProfile = true;
+            continuePanel.SetActive(true);
+        }
     }
 }

@@ -6,13 +6,18 @@ using UnityEngine;
 
 using MobfishCardboard.UEditor;
 
-public class NewBehaviourScript : IPostprocessBuildWithReport
+namespace MobfishCardboardDemo
 {
-    public int callbackOrder => 0;
-
-    public void OnPostprocessBuild(BuildReport report)
+    public class DemoBuildProcessor: IPostprocessBuildWithReport
     {
-        string path = report.summary.outputPath;
-        CardboardEditorHelper.PostProcessXCode(path);
+        public int callbackOrder => 0;
+
+        public void OnPostprocessBuild(BuildReport report)
+        {
+            string path = report.summary.outputPath;
+            CardboardEditorHelper.PostProcessXCode(path);
+        }
     }
+
+
 }
