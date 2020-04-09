@@ -62,11 +62,21 @@ public class VRCamera : MonoBehaviour
     {
         CardboardQrCode.RetrieveDeviceParam();
         (IntPtr, int) par = CardboardQrCode.GetDeviceParamsPointer();
+
+        if(par.Item2==0)
+        {
+            ScanQRCode();
+            return;
+        }
+
         //CardboardLensDistortion.DestroyLensDistortion();
         CardboardLensDistortion.CreateLensDistortion(par.Item1, par.Item2);
         RefreshCamera();
 
         needUpdateProfile = false;
+
+        (byte[], int) paramDetailVar = CardboardQrCode.GetDeviceParamsByte();
+        NativeDataExtract.Save_EncodedParam(paramDetailVar.Item1, paramDetailVar.Item2);
     }
 
     private void ContinueClicked()
@@ -98,8 +108,8 @@ public class VRCamera : MonoBehaviour
         rightCam.projectionMatrix = CardboardLensDistortion.GetProjectionMatrix(CardboardEye.kRight);
         (CardboardMesh, CardboardMesh) eyeMeshes = CardboardLensDistortion.GetEyeMeshes();
         CardboardDistortionRenderer.SetEyeMeshes(eyeMeshes.Item1, eyeMeshes.Item2);
-        testEyeMeshLeft.mesh = CardboardUtility.ConvertCardboardMesh(eyeMeshes.Item1);
-        testEyeMeshRight.mesh = CardboardUtility.ConvertCardboardMesh(eyeMeshes.Item2);
+        testEyeMeshLeft.mesh = CardboardUtility.ConvertCardboardMesh_LineStrip(eyeMeshes.Item1);
+        testEyeMeshRight.mesh = CardboardUtility.ConvertCardboardMesh_LineStrip(eyeMeshes.Item2);
 
         NativeDataExtract.Save_MeshJson(eyeMeshes.Item1);
         NativeDataExtract.Save_MeshJson(eyeMeshes.Item2);

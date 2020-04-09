@@ -12,6 +12,8 @@ namespace MobfishCardboard
         [DllImport(CardboardUtility.DLLName)]
         private static extern void CardboardQrCode_scanQrCodeAndSaveDeviceParams();
 
+        private static byte[] encodedBytes;
+
         //todo is this correct?
         //https://developers.google.com/cardboard/reference/c/group/qrcode-scanner#cardboardqrcode_getsaveddeviceparams
         [DllImport(CardboardUtility.DLLName)]
@@ -27,14 +29,19 @@ namespace MobfishCardboard
             CardboardQrCode_getSavedDeviceParams(ref _encodedDeviceParams, ref _paramsSize);
 
             Debug.Log("Feature Test RetrieveDeviceParam size=" + _paramsSize);
-            byte[] dataArray = ReadByteArray(_encodedDeviceParams, _paramsSize);
-            Debug.Log("Feature Test RetrieveDeviceParam params byte=\r\n " + string.Join(" , ", dataArray));
+            encodedBytes = ReadByteArray(_encodedDeviceParams, _paramsSize);
+            Debug.Log("Feature Test RetrieveDeviceParam params length=" + encodedBytes.Length + ", byte=\r\n " + string.Join(" , ", encodedBytes));
 
         }
 
         public static (IntPtr, int) GetDeviceParamsPointer()
         {
             return (_encodedDeviceParams, _paramsSize);
+        }
+
+        public static (byte[], int) GetDeviceParamsByte()
+        {
+            return (encodedBytes, _paramsSize);
         }
 
         private static byte[] ReadByteArray(IntPtr pointer, int size)

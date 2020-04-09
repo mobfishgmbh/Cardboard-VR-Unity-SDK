@@ -8,7 +8,7 @@ namespace MobfishCardboard
         public const string DLLName = "__Internal";
         public const int kResolution = 40;
 
-        public static Mesh ConvertCardboardMesh(CardboardMesh sourceMesh)
+        public static Mesh ConvertCardboardMesh_LineStrip(CardboardMesh sourceMesh)
         {
             //https://github.com/googlevr/cardboard/blob/master/sdk/distortion_mesh.cc
             Mesh result = new Mesh();
