@@ -1,4 +1,8 @@
-﻿using System;
+﻿#if (UNITY_IOS || UNITY_ANDROID) && !UNITY_EDITOR
+#define NATIVE_PLUGIN_EXIST
+#endif
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,11 +14,12 @@ namespace MobfishCardboard
     {
         private static IntPtr _cardboardDistortionRenderer;
 
+        #if NATIVE_PLUGIN_EXIST
         [DllImport(CardboardUtility.DLLName)]
         private static extern IntPtr CardboardDistortionRenderer_create();
 
         [DllImport(CardboardUtility.DLLName)]
-        private static extern IntPtr CardboardDistortionRenderer_destroy(IntPtr renderer);
+        private static extern void CardboardDistortionRenderer_destroy(IntPtr renderer);
 
         //todo is this correct?
         [DllImport(CardboardUtility.DLLName)]
@@ -25,6 +30,28 @@ namespace MobfishCardboard
         private static extern void CardboardDestortionRenderer_renderEyeToDisplay(IntPtr renderer,
             int target_display, int display_width, int display_height,
             CardboardEyeTextureDescription left_eye, CardboardEyeTextureDescription right_eye);
+
+        #else
+
+        private static IntPtr CardboardDistortionRenderer_create()
+        {
+            return IntPtr.Zero;
+        }
+
+        private static void CardboardDistortionRenderer_destroy(IntPtr renderer){}
+
+        private static void CardboardDistortionRenderer_setMesh(
+            IntPtr renderer, ref CardboardMesh mesh, CardboardEye eye)
+        {
+        }
+
+        private static void CardboardDestortionRenderer_renderEyeToDisplay(IntPtr renderer,
+            int target_display, int display_width, int display_height,
+            CardboardEyeTextureDescription left_eye, CardboardEyeTextureDescription right_eye)
+        {
+        }
+
+        #endif
 
         public static void InitDestortionRenderer()
         {

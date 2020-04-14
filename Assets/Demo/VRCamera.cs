@@ -33,17 +33,8 @@ namespace MobfishCardboardDemo
         private void Awake()
         {
             Application.targetFrameRate = 60;
-            eyeRenderTextureDesc = new RenderTextureDescriptor()
-            {
-                dimension = TextureDimension.Tex2D,
-                width = Screen.width / 2,
-                height = Screen.height / 2,
-                depthBufferBits = 16,
-                volumeDepth = 1,
-                msaaSamples = 2
-            };
-            centerRenderTexture = new RenderTexture(eyeRenderTextureDesc);
-            centerCam.targetTexture = centerRenderTexture;
+
+            SetupRenderTexture();
 
             continuePanel.SetActive(false);
             continueButton.onClick.AddListener(ContinueClicked);
@@ -60,12 +51,32 @@ namespace MobfishCardboardDemo
             ResetProfile();
         }
 
+        private void SetupRenderTexture()
+        {
+            eyeRenderTextureDesc = new RenderTextureDescriptor()
+            {
+                dimension = TextureDimension.Tex2D,
+                width = Screen.width,
+                height = Screen.height,
+                depthBufferBits = 16,
+                volumeDepth = 1,
+                msaaSamples = 2,
+            };
+
+            RenderTexture newLeft = new RenderTexture(eyeRenderTextureDesc);
+            RenderTexture newRight = new RenderTexture(eyeRenderTextureDesc);
+            leftCam.targetTexture = newLeft;
+            rightCam.targetTexture = newRight;
+
+            CardboardManager.SetRenderTexture(newLeft, newRight);
+        }
+
         private void ResetProfile()
         {
             CardboardQrCode.RetrieveDeviceParam();
             (IntPtr, int) par = CardboardQrCode.GetDeviceParamsPointer();
 
-            if (par.Item2 == 0)
+            if (par.Item2 == 0 && !Application.isEditor)
             {
                 ScanQRCode();
                 return;
@@ -87,6 +98,7 @@ namespace MobfishCardboardDemo
             ResetProfile();
         }
 
+
         private void DoRenderTest()
         {
             CardboardEyeTextureDescription cetdLeft = new CardboardEyeTextureDescription()
@@ -106,12 +118,21 @@ namespace MobfishCardboardDemo
         {
             CardboardLensDistortion.RetrieveEyeMeshes();
             CardboardLensDistortion.RefreshProjectionMatrix();
-            leftCam.projectionMatrix = CardboardLensDistortion.GetProjectionMatrix(CardboardEye.kLeft);
-            rightCam.projectionMatrix = CardboardLensDistortion.GetProjectionMatrix(CardboardEye.kRight);
+
+            Matrix4x4 leftMatrix = CardboardLensDistortion.GetProjectionMatrix(CardboardEye.kLeft);
+            if (!leftMatrix.Equals(Matrix4x4.zero))
+                leftCam.projectionMatrix = leftMatrix;
+            Matrix4x4 rightMatrix = CardboardLensDistortion.GetProjectionMatrix(CardboardEye.kRight);
+            if (!rightMatrix.Equals(Matrix4x4.zero))
+                rightCam.projectionMatrix = rightMatrix;
+
             (CardboardMesh, CardboardMesh) eyeMeshes = CardboardLensDistortion.GetEyeMeshes();
             CardboardDistortionRenderer.SetEyeMeshes(eyeMeshes.Item1, eyeMeshes.Item2);
-            testEyeMeshLeft.mesh = CardboardUtility.ConvertCardboardMesh_Triangle(eyeMeshes.Item1);
-            testEyeMeshRight.mesh = CardboardUtility.ConvertCardboardMesh_Triangle(eyeMeshes.Item2);
+            CardboardManager.SetEyeMesh(
+                CardboardUtility.ConvertCardboardMesh_Triangle(eyeMeshes.Item1),
+                CardboardUtility.ConvertCardboardMesh_Triangle(eyeMeshes.Item2));
+            testEyeMeshLeft.mesh = CardboardManager.viewMeshLeft;
+            testEyeMeshRight.mesh = CardboardManager.viewMeshRight;
 
             NativeDataExtract.Save_MeshJson(eyeMeshes.Item1);
             NativeDataExtract.Save_MeshJson(eyeMeshes.Item2);
@@ -121,7 +142,8 @@ namespace MobfishCardboardDemo
         void Update()
         {
             CardboardHeadTracker.UpdatePoseGyro();
-            transform.localRotation = CardboardHeadTracker.trackerUnityRotation;
+            if (!Application.isEditor)
+                transform.localRotation = CardboardHeadTracker.trackerUnityRotation;
             Update_DebugInfo();
         }
 

@@ -1,4 +1,8 @@
-﻿using System;
+﻿#if (UNITY_IOS || UNITY_ANDROID) && !UNITY_EDITOR
+#define NATIVE_PLUGIN_EXIST
+#endif
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,6 +28,7 @@ namespace MobfishCardboard
         public static Vector3 trackerUnityPosition { get; private set; }
         public static Quaternion trackerUnityRotation { get; private set; }
 
+        #if NATIVE_PLUGIN_EXIST
         [DllImport(CardboardUtility.DLLName)]
         private static extern IntPtr CardboardHeadTracker_create();
 
@@ -39,6 +44,37 @@ namespace MobfishCardboard
 
         [DllImport(CardboardUtility.DLLName)]
         private static extern void CardboardHeadTracker_resume(IntPtr head_tracker);
+
+        #else
+
+        private static IntPtr CardboardHeadTracker_create()
+        {
+            return IntPtr.Zero;
+        }
+
+        private static void CardboardHeadTracker_destroy(IntPtr head_tracker)
+        {
+        }
+
+        private static void CardboardHeadTracker_getPose(
+            IntPtr head_tracker, double timestamp_ns, float[] position, float[] orientation)
+        {
+            position = new[] {0f, 0f, 0f};
+            orientation = new[]
+            {
+                Quaternion.identity.x, Quaternion.identity.y, Quaternion.identity.z, Quaternion.identity.w
+            };
+        }
+
+        private static void CardboardHeadTracker_pause(IntPtr head_tracker)
+        {
+        }
+
+        private static void CardboardHeadTracker_resume(IntPtr head_tracker)
+        {
+        }
+
+        #endif
 
         [DllImport(CardboardUtility.DLLName)]
         private static extern double CACurrentMediaTime();
