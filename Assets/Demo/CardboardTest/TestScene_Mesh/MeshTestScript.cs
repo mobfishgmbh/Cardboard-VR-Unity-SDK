@@ -14,8 +14,9 @@ namespace MobfishCardboardDemo.SceneTest
         private void Awake()
         {
             CardboardMesh cMeshData = JsonUtility.FromJson<CardboardMesh>(meshDataRaw.text);
-            Mesh unityMesh = CardboardUtility.ConvertCardboardMesh_LineStrip(cMeshData);
+            Mesh unityMesh = CardboardUtility.ConvertCardboardMesh_Triangle(cMeshData);
             meshFilter.mesh = unityMesh;
+
         }
 
         // Start is called before the first frame update
