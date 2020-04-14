@@ -110,8 +110,8 @@ namespace MobfishCardboardDemo
             rightCam.projectionMatrix = CardboardLensDistortion.GetProjectionMatrix(CardboardEye.kRight);
             (CardboardMesh, CardboardMesh) eyeMeshes = CardboardLensDistortion.GetEyeMeshes();
             CardboardDistortionRenderer.SetEyeMeshes(eyeMeshes.Item1, eyeMeshes.Item2);
-            testEyeMeshLeft.mesh = CardboardUtility.ConvertCardboardMesh_LineStrip(eyeMeshes.Item1);
-            testEyeMeshRight.mesh = CardboardUtility.ConvertCardboardMesh_LineStrip(eyeMeshes.Item2);
+            testEyeMeshLeft.mesh = CardboardUtility.ConvertCardboardMesh_Triangle(eyeMeshes.Item1);
+            testEyeMeshRight.mesh = CardboardUtility.ConvertCardboardMesh_Triangle(eyeMeshes.Item2);
 
             NativeDataExtract.Save_MeshJson(eyeMeshes.Item1);
             NativeDataExtract.Save_MeshJson(eyeMeshes.Item2);
