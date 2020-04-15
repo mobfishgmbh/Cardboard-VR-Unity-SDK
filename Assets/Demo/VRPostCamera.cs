@@ -14,9 +14,12 @@ namespace MobfishCardboardDemo
         [SerializeField]
         private Material eyeMaterialRight;
 
+        private Camera postCam;
+
         private void Awake()
         {
-
+            postCam = GetComponent<Camera>();
+            postCam.projectionMatrix = Matrix4x4.identity;
         }
 
         private void OnPostRender()

@@ -68,7 +68,7 @@ namespace MobfishCardboard
             {
                 mesh = new CardboardMesh()
                 {
-                    vertices = new[] {-0.5f, -0.25f, -0.5f, 0.25f, -0.125f, -0.25f, -0.125f, 0.25f},
+                    vertices = new[] {-0.65f, -0.25f, -0.65f, 0.25f, -0.125f, -0.25f, -0.125f, 0.25f},
                     n_vertices = 4,
                     indices = new[] {0, 1, 2, 3},
                     n_indices = 4,
@@ -79,7 +79,7 @@ namespace MobfishCardboard
             {
                 mesh = new CardboardMesh()
                 {
-                    vertices = new[] {0.125f, -0.25f, 0.125f, 0.25f, 0.5f, -0.25f, 0.5f, 0.25f},
+                    vertices = new[] {0.125f, -0.25f, 0.125f, 0.25f, 0.65f, -0.25f, 0.65f, 0.25f},
                     n_vertices = 4,
                     indices = new[] {0, 1, 2, 3},
                     n_indices = 4,
