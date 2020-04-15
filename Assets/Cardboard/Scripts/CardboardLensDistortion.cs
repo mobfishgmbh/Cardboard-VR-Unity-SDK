@@ -1,4 +1,8 @@
-﻿using System;
+﻿#if (UNITY_IOS || UNITY_ANDROID) && !UNITY_EDITOR
+#define NATIVE_PLUGIN_EXIST
+#endif
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,6 +24,7 @@ namespace MobfishCardboard
         private static float[] eyeFromHeadMatrixLeft;
         private static float[] eyeFromHeadMatrixRight;
 
+        #if NATIVE_PLUGIN_EXIST
         [DllImport(CardboardUtility.DLLName)]
         private static extern IntPtr CardboardLensDistortion_create(
             IntPtr encoded_device_params, int size, int display_width, int display_height);
@@ -43,6 +48,66 @@ namespace MobfishCardboard
         [DllImport(CardboardUtility.DLLName)]
         private static extern CardboardUv CardboardLensDistortion_undistortedUvForDistortedUv(
             IntPtr lens_Distortion, CardboardUv distorted_uv, CardboardEye eye);
+
+        #else
+
+        private static IntPtr CardboardLensDistortion_create(
+            IntPtr encoded_device_params, int size, int display_width, int display_height)
+        {
+            return IntPtr.Zero;
+        }
+
+        private static void CardboardLensDistortion_destroy(IntPtr lens_Distortion)
+        {
+        }
+
+        private static void CardboardLensDistortion_getDistortionMesh(
+            IntPtr lens_Distortion, CardboardEye eye, ref CardboardMesh mesh)
+        {
+            if (eye == CardboardEye.kLeft)
+            {
+                mesh = new CardboardMesh()
+                {
+                    vertices = new[] {-0.65f, -0.25f, -0.65f, 0.25f, -0.125f, -0.25f, -0.125f, 0.25f},
+                    n_vertices = 4,
+                    indices = new[] {0, 1, 2, 3},
+                    n_indices = 4,
+                    uvs = new[] {0f, 0f, 0f, 1f, 1f, 0f, 1f, 1f}
+                };
+            }
+            else
+            {
+                mesh = new CardboardMesh()
+                {
+                    vertices = new[] {0.125f, -0.25f, 0.125f, 0.25f, 0.65f, -0.25f, 0.65f, 0.25f},
+                    n_vertices = 4,
+                    indices = new[] {0, 1, 2, 3},
+                    n_indices = 4,
+                    uvs = new[] {0f, 0f, 0f, 1f, 1f, 0f, 1f, 1f}
+                };
+            }
+        }
+
+        private static void CardboardLensDistortion_getEyeMatrices(
+            IntPtr lens_Distortion, float[] projection_matrix, float[] eye_from_head_matrix, CardboardEye eye)
+        {
+            projection_matrix.Initialize();
+            eye_from_head_matrix.Initialize();
+        }
+
+        private static CardboardUv CardboardLensDistortion_distortedUvForUndistortedUv(
+            IntPtr lens_Distortion, CardboardUv undistorted_uv, CardboardEye eye)
+        {
+            return undistorted_uv;
+        }
+
+        private static CardboardUv CardboardLensDistortion_undistortedUvForDistortedUv(
+            IntPtr lens_Distortion, CardboardUv distorted_uv, CardboardEye eye)
+        {
+            return distorted_uv;
+        }
+
+        #endif
 
         public static void CreateLensDistortion(IntPtr encoded_device_params, int params_size)
         {
@@ -96,8 +161,10 @@ namespace MobfishCardboard
             eyeFromHeadMatrixLeft = new float[16];
             projectionMatrixRight = new float[16];
             eyeFromHeadMatrixRight = new float[16];
-            CardboardLensDistortion_getEyeMatrices(_lensDistortion, projectionMatrixLeft, eyeFromHeadMatrixLeft, CardboardEye.kLeft);
-            CardboardLensDistortion_getEyeMatrices(_lensDistortion, projectionMatrixRight, eyeFromHeadMatrixRight, CardboardEye.kRight);
+            CardboardLensDistortion_getEyeMatrices(_lensDistortion, projectionMatrixLeft, eyeFromHeadMatrixLeft,
+                CardboardEye.kLeft);
+            CardboardLensDistortion_getEyeMatrices(_lensDistortion, projectionMatrixRight, eyeFromHeadMatrixRight,
+                CardboardEye.kRight);
         }
 
         public static Matrix4x4 GetProjectionMatrix(CardboardEye eye)
