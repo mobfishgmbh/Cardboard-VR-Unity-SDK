@@ -12,7 +12,7 @@ namespace MobfishCardboardDemo
     public class VRCamera: MonoBehaviour
     {
         [Header("Cameras")]
-        public Camera centerCam;
+        public Camera novrCam;
         public Camera leftCam;
         public Camera rightCam;
 
@@ -28,15 +28,19 @@ namespace MobfishCardboardDemo
 
         private RenderTextureDescriptor eyeRenderTextureDesc;
         private RenderTexture centerRenderTexture;
-        private bool needUpdateProfile;
 
         private void Awake()
         {
+            #if UNITY_IOS
             Application.targetFrameRate = 60;
+
+            #endif
 
             SetupRenderTexture();
 
-            continuePanel.SetActive(false);
+            CardboardManager.InitCardboard();
+
+            SetEnableQROverlay(false);
             continueButton.onClick.AddListener(ContinueClicked);
             scanQRButton.onClick.AddListener(ScanQRCode);
         }
@@ -44,11 +48,7 @@ namespace MobfishCardboardDemo
         // Start is called before the first frame update
         void Start()
         {
-            CardboardHeadTracker.CreateTracker();
-            CardboardHeadTracker.ResumeTracker();
-            CardboardDistortionRenderer.InitDestortionRenderer();
-
-            ResetProfile();
+            RefreshCamera();
         }
 
         private void SetupRenderTexture()
@@ -71,77 +71,42 @@ namespace MobfishCardboardDemo
             CardboardManager.SetRenderTexture(newLeft, newRight);
         }
 
-        private void ResetProfile()
+        private void ContinueClicked()
         {
-            CardboardQrCode.RetrieveDeviceParam();
-            (IntPtr, int) par = CardboardQrCode.GetDeviceParamsPointer();
+            CardboardManager.InitDeviceProfile();
+            CardboardManager.InitCameraProperties();
+            RefreshCamera();
 
-            if (par.Item2 == 0 && !Application.isEditor)
+            SetEnableQROverlay(false);
+        }
+
+        private void RefreshCamera()
+        {
+            if (!CardboardManager.profileAvailable)
             {
-                ScanQRCode();
+                SetEnableQROverlay(true);
                 return;
             }
 
-            //CardboardLensDistortion.DestroyLensDistortion();
-            CardboardLensDistortion.CreateLensDistortion(par.Item1, par.Item2);
-            RefreshCamera();
+            if (!CardboardManager.projectionMatrixLeft.Equals(Matrix4x4.zero))
+                leftCam.projectionMatrix = CardboardManager.projectionMatrixLeft;
+            if (!CardboardManager.projectionMatrixRight.Equals(Matrix4x4.zero))
+                rightCam.projectionMatrix = CardboardManager.projectionMatrixRight;
 
-            needUpdateProfile = false;
+            testEyeMeshLeft.mesh = CardboardManager.viewMeshLeft;
+            testEyeMeshRight.mesh = CardboardManager.viewMeshRight;
+
+            NativeDataExtract.Save_MeshJson(CardboardManager.viewMeshLeftRaw);
+            NativeDataExtract.Save_MeshJson(CardboardManager.viewMeshRightRaw);
 
             (byte[], int) paramDetailVar = CardboardQrCode.GetDeviceParamsByte();
             NativeDataExtract.Save_EncodedParam(paramDetailVar.Item1, paramDetailVar.Item2);
         }
 
-        private void ContinueClicked()
-        {
-            continuePanel.SetActive(false);
-            ResetProfile();
-        }
-
-
-        private void DoRenderTest()
-        {
-            CardboardEyeTextureDescription cetdLeft = new CardboardEyeTextureDescription()
-            {
-                texture = centerRenderTexture.GetNativeTexturePtr(),
-                eye_from_head = CardboardLensDistortion.GetEyeFromHeadRaw(CardboardEye.kLeft),
-                left_u = 0,
-                right_u = 1,
-                bottom_v = 0,
-                top_v = 1,
-                layer = 0
-            };
-            CardboardDistortionRenderer.RenderEyeToDisplay(cetdLeft, cetdLeft);
-        }
-
-        private void RefreshCamera()
-        {
-            CardboardLensDistortion.RetrieveEyeMeshes();
-            CardboardLensDistortion.RefreshProjectionMatrix();
-
-            Matrix4x4 leftMatrix = CardboardLensDistortion.GetProjectionMatrix(CardboardEye.kLeft);
-            if (!leftMatrix.Equals(Matrix4x4.zero))
-                leftCam.projectionMatrix = leftMatrix;
-            Matrix4x4 rightMatrix = CardboardLensDistortion.GetProjectionMatrix(CardboardEye.kRight);
-            if (!rightMatrix.Equals(Matrix4x4.zero))
-                rightCam.projectionMatrix = rightMatrix;
-
-            (CardboardMesh, CardboardMesh) eyeMeshes = CardboardLensDistortion.GetEyeMeshes();
-            CardboardDistortionRenderer.SetEyeMeshes(eyeMeshes.Item1, eyeMeshes.Item2);
-            CardboardManager.SetEyeMesh(
-                CardboardUtility.ConvertCardboardMesh_Triangle(eyeMeshes.Item1),
-                CardboardUtility.ConvertCardboardMesh_Triangle(eyeMeshes.Item2));
-            testEyeMeshLeft.mesh = CardboardManager.viewMeshLeft;
-            testEyeMeshRight.mesh = CardboardManager.viewMeshRight;
-
-            NativeDataExtract.Save_MeshJson(eyeMeshes.Item1);
-            NativeDataExtract.Save_MeshJson(eyeMeshes.Item2);
-        }
-
         // Update is called once per frame
         void Update()
         {
-            CardboardHeadTracker.UpdatePoseGyro();
+            CardboardHeadTracker.UpdatePose();
             if (!Application.isEditor)
                 transform.localRotation = CardboardHeadTracker.trackerUnityRotation;
             Update_DebugInfo();
@@ -167,8 +132,12 @@ namespace MobfishCardboardDemo
         private void ScanQRCode()
         {
             CardboardQrCode.StartScanQrCode();
-            needUpdateProfile = true;
-            continuePanel.SetActive(true);
+            SetEnableQROverlay(true);
+        }
+
+        private void SetEnableQROverlay(bool shouldEnable)
+        {
+            continuePanel.SetActive(shouldEnable);
         }
     }
 }

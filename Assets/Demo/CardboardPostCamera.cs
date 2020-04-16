@@ -7,7 +7,7 @@ using MobfishCardboard;
 
 namespace MobfishCardboardDemo
 {
-    public class VRPostCamera: MonoBehaviour
+    public class CardboardPostCamera: MonoBehaviour
     {
         [SerializeField]
         private Material eyeMaterialLeft;
@@ -24,7 +24,7 @@ namespace MobfishCardboardDemo
 
         private void OnPostRender()
         {
-            if (CardboardManager.viewMeshLeft == null || CardboardManager.viewMeshRight == null)
+            if (!CardboardManager.profileAvailable)
                 return;
 
             eyeMaterialLeft.mainTexture = CardboardManager.viewTextureLeft;
@@ -41,10 +41,5 @@ namespace MobfishCardboardDemo
 
         }
 
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
     }
 }

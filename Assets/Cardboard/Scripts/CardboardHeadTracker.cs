@@ -86,7 +86,13 @@ namespace MobfishCardboard
             _headTracker = CardboardHeadTracker_create();
         }
 
-        public static void UpdatePoseCardboard()
+        public static void UpdatePose()
+        {
+            // UpdatePoseCardboard();
+            UpdatePoseGyro();
+        }
+
+        private static void UpdatePoseCardboard()
         {
             double time = CACurrentMediaTime() * 1e9;
             time += kPrediction;
@@ -107,7 +113,7 @@ namespace MobfishCardboard
             trackerUnityRotation = Quaternion.LookRotation(unityPoseMat.GetColumn(2), unityPoseMat.GetColumn(1));
         }
 
-        public static void UpdatePoseGyro()
+        private static void UpdatePoseGyro()
         {
             trackerRawPosition = trackerUnityPosition = Vector3.zero;
             trackerRawRotation = gyro.attitude;
