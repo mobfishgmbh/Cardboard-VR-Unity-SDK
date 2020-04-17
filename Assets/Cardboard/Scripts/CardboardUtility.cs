@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
 using UnityEngine;
 
 namespace MobfishCardboard
@@ -85,6 +87,26 @@ namespace MobfishCardboard
             result.SetIndices(newIndices.ToArray(), MeshTopology.Triangles, 0);
 
             return result;
+        }
+
+        public static string DeviceParamsToString(DeviceParams deviceParams)
+        {
+            if (deviceParams == null)
+                return string.Empty;
+
+            StringBuilder result = new StringBuilder();
+            result.Append("Vendor: ");
+            result.AppendLine(deviceParams.Vendor);
+            result.Append("Model: ");
+            result.AppendLine(deviceParams.Model);
+            result.Append("InterLensDistance: ");
+            result.AppendLine(deviceParams.InterLensDistance.ToString());
+            result.Append("ScreenToLensDistance: ");
+            result.AppendLine(deviceParams.ScreenToLensDistance.ToString());
+            result.Append("TrayToLensDistance: ");
+            result.AppendLine(deviceParams.TrayToLensDistance.ToString());
+
+            return result.ToString();
         }
     }
 }

@@ -1,4 +1,4 @@
-#if (UNITY_IOS || UNITY_ANDROID) && !UNITY_EDITOR
+﻿#if (UNITY_IOS || UNITY_ANDROID) && !UNITY_EDITOR
 #define NATIVE_PLUGIN_EXIST
 #endif
 
@@ -18,7 +18,6 @@ namespace MobfishCardboard
         [DllImport(CardboardUtility.DLLName)]
         private static extern void CardboardQrCode_scanQrCodeAndSaveDeviceParams();
 
-        //todo is this correct?
         //https://developers.google.com/cardboard/reference/c/group/qrcode-scanner#cardboardqrcode_getsaveddeviceparams
         [DllImport(CardboardUtility.DLLName)]
         private static extern void CardboardQrCode_getSavedDeviceParams(ref IntPtr encoded_device_params, ref int size);
@@ -48,14 +47,10 @@ namespace MobfishCardboard
             Debug.Log("Feature Test RetrieveDeviceParam size=" + _paramsSize);
             encodedBytes = ReadByteArray(_encodedDeviceParams, _paramsSize);
             DeviceParams deviceParams = DeviceParams.Parser.ParseFrom(encodedBytes);
-            Debug.Log("Device Parameters from Unity: ");
-            Debug.Log("Vendor: " + deviceParams.Vendor);
-            Debug.Log("Model: " + deviceParams.Model);
-            Debug.Log("InterLensDistance: " + deviceParams.InterLensDistance);
-            Debug.Log("TrayToLensDistance: " + deviceParams.TrayToLensDistance);
-            Debug.Log("ScreenToLensDistance: " + deviceParams.ScreenToLensDistance);
-            Debug.Log("Feature Test RetrieveDeviceParam params length=" + encodedBytes.Length + ", byte=\r\n " + string.Join(" , ", encodedBytes));
-
+            Debug.LogFormat("Device Parameters from Unity: \r\n{0}",
+                CardboardUtility.DeviceParamsToString(deviceParams));
+            Debug.LogFormat("Feature Test RetrieveDeviceParam params length={0}, byte=\r\n {1}",
+                encodedBytes.Length, string.Join(" , ", encodedBytes));
         }
 
         public static (IntPtr, int) GetDeviceParamsPointer()
