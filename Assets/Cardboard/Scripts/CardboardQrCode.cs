@@ -18,7 +18,6 @@ namespace MobfishCardboard
         [DllImport(CardboardUtility.DLLName)]
         private static extern void CardboardQrCode_scanQrCodeAndSaveDeviceParams();
 
-        //todo is this correct?
         //https://developers.google.com/cardboard/reference/c/group/qrcode-scanner#cardboardqrcode_getsaveddeviceparams
         [DllImport(CardboardUtility.DLLName)]
         private static extern void CardboardQrCode_getSavedDeviceParams(ref IntPtr encoded_device_params, ref int size);
@@ -47,9 +46,11 @@ namespace MobfishCardboard
 
             Debug.Log("Feature Test RetrieveDeviceParam size=" + _paramsSize);
             encodedBytes = ReadByteArray(_encodedDeviceParams, _paramsSize);
-            Debug.Log("Feature Test RetrieveDeviceParam params length=" + encodedBytes.Length + ", byte=\r\n " +
-                string.Join(" , ", encodedBytes));
-
+            DeviceParams deviceParams = DeviceParams.Parser.ParseFrom(encodedBytes);
+            Debug.LogFormat("Device Parameters from Unity: \r\n{0}",
+                CardboardUtility.DeviceParamsToString(deviceParams));
+            Debug.LogFormat("Feature Test RetrieveDeviceParam params length={0}, byte=\r\n {1}",
+                encodedBytes.Length, string.Join(" , ", encodedBytes));
         }
 
         public static (IntPtr, int) GetDeviceParamsPointer()
