@@ -25,7 +25,7 @@ Please see the [LICENSE](/LICENSE.md) file.
 Official Google Cardboard SDK License:  
 https://github.com/googlevr/cardboard/blob/master/LICENSE
 
-Protocol Buffer License:
+Protocol Buffer License:  
 https://github.com/protocolbuffers/protobuf/blob/master/LICENSE
 
 The "Google Cardboard" name is a trademark owned by Google and is not included within the assets licensed under the Apache License 2.0.
