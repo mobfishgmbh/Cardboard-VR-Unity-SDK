@@ -13,6 +13,7 @@ namespace MobfishCardboard
         private static IntPtr _encodedDeviceParams;
         private static int _paramsSize;
         private static byte[] encodedBytes;
+        private static DeviceParams decodedParams;
 
         #if NATIVE_PLUGIN_EXIST
         [DllImport(CardboardUtility.DLLName)]
@@ -46,11 +47,14 @@ namespace MobfishCardboard
 
             Debug.Log("Feature Test RetrieveDeviceParam size=" + _paramsSize);
             encodedBytes = ReadByteArray(_encodedDeviceParams, _paramsSize);
-            DeviceParams deviceParams = DeviceParams.Parser.ParseFrom(encodedBytes);
-            Debug.LogFormat("Device Parameters from Unity: \r\n{0}",
-                CardboardUtility.DeviceParamsToString(deviceParams));
+
+            if (_paramsSize > 0)
+                decodedParams = DeviceParams.Parser.ParseFrom(encodedBytes);
+
             Debug.LogFormat("Feature Test RetrieveDeviceParam params length={0}, byte=\r\n {1}",
                 encodedBytes.Length, string.Join(" , ", encodedBytes));
+            Debug.LogFormat("Feature Test decode device params: \r\n{0}",
+                CardboardUtility.DeviceParamsToString(decodedParams));
         }
 
         public static (IntPtr, int) GetDeviceParamsPointer()
@@ -58,9 +62,14 @@ namespace MobfishCardboard
             return (_encodedDeviceParams, _paramsSize);
         }
 
-        public static (byte[], int) GetDeviceParamsByte()
+        // public static (byte[], int) GetDeviceParamsByte()
+        // {
+        //     return (encodedBytes, _paramsSize);
+        // }
+
+        public static DeviceParams GetDecodedDeviceParams()
         {
-            return (encodedBytes, _paramsSize);
+            return decodedParams;
         }
 
         private static byte[] ReadByteArray(IntPtr pointer, int size)

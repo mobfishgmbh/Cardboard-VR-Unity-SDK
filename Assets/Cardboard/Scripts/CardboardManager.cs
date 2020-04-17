@@ -5,6 +5,7 @@ namespace MobfishCardboard
 {
     public static class CardboardManager
     {
+        public static DeviceParams deviceParameter { get; private set; }
         public static RenderTexture viewTextureLeft { get; private set; }
         public static RenderTexture viewTextureRight { get; private set; }
         public static Mesh viewMeshLeft { get; private set; }
@@ -16,17 +17,26 @@ namespace MobfishCardboard
 
         public static bool profileAvailable { get; private set; }
 
+        public static event Action cardboardProfileChanged;
+
         public static void InitCardboard()
         {
-            CardboardQrCode.RetrieveDeviceParam();
             CardboardHeadTracker.CreateTracker();
             CardboardHeadTracker.ResumeTracker();
 
-            InitDeviceProfile();
-            InitCameraProperties();
+            RefreshParameters();
         }
 
-        public static void InitDeviceProfile()
+        public static void RefreshParameters()
+        {
+            CardboardQrCode.RetrieveDeviceParam();
+            InitDeviceProfile();
+            InitCameraProperties();
+
+            cardboardProfileChanged?.Invoke();
+        }
+
+        private static void InitDeviceProfile()
         {
             (IntPtr, int) par = CardboardQrCode.GetDeviceParamsPointer();
 
@@ -38,11 +48,12 @@ namespace MobfishCardboard
             }
 
             //CardboardLensDistortion.DestroyLensDistortion();
+            deviceParameter = CardboardQrCode.GetDecodedDeviceParams();
             CardboardLensDistortion.CreateLensDistortion(par.Item1, par.Item2);
             profileAvailable = true;
         }
 
-        public static void InitCameraProperties()
+        private static void InitCameraProperties()
         {
             if (!profileAvailable)
                 return;

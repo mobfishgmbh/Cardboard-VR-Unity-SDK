@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,6 +20,16 @@ namespace MobfishCardboardDemo
 
         }
 
+        private void OnEnable()
+        {
+            CardboardManager.cardboardProfileChanged += RefreshCameraProperty;
+        }
+
+        private void OnDisable()
+        {
+            CardboardManager.cardboardProfileChanged -= RefreshCameraProperty;
+        }
+
         // Update is called once per frame
         void Update()
         {
@@ -37,7 +48,7 @@ namespace MobfishCardboardDemo
             Debug.Log("OnApplicationPause called, pauseStatus=" + pauseStatus);
         }
 
-        private void CameraPropertyChanged()
+        private void RefreshCameraProperty()
         {
             testEyeMeshLeft.mesh = CardboardManager.viewMeshLeft;
             testEyeMeshRight.mesh = CardboardManager.viewMeshRight;
@@ -45,8 +56,8 @@ namespace MobfishCardboardDemo
             NativeDataExtract.Save_MeshJson(CardboardManager.viewMeshLeftRaw);
             NativeDataExtract.Save_MeshJson(CardboardManager.viewMeshRightRaw);
 
-            (byte[], int) paramDetailVar = CardboardQrCode.GetDeviceParamsByte();
-            NativeDataExtract.Save_EncodedParam(paramDetailVar.Item1, paramDetailVar.Item2);
+            // (byte[], int) paramDetailVar = CardboardQrCode.GetDeviceParamsByte();
+            // NativeDataExtract.Save_EncodedParam(paramDetailVar.Item1, paramDetailVar.Item2);
         }
     }
 

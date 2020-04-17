@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using MobfishCardboard;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
@@ -19,10 +18,12 @@ namespace MobfishCardboard
         [Header("QR")]
         public Button scanQRButton;
         public Text profileParamText;
+        public Button refreshButton;
         public Button continueButton;
         public GameObject continuePanel;
 
         private RenderTextureDescriptor eyeRenderTextureDesc;
+        private bool overlayIsOpen;
 
         private void Awake()
         {
@@ -38,6 +39,7 @@ namespace MobfishCardboard
             SetEnableQROverlay(false);
             continueButton.onClick.AddListener(ContinueClicked);
             scanQRButton.onClick.AddListener(ScanQRCode);
+            refreshButton.onClick.AddListener(RefreshCamera);
         }
 
         // Start is called before the first frame update
@@ -68,8 +70,6 @@ namespace MobfishCardboard
 
         private void ContinueClicked()
         {
-            CardboardManager.InitDeviceProfile();
-            CardboardManager.InitCameraProperties();
             RefreshCamera();
 
             SetEnableQROverlay(false);
@@ -77,6 +77,8 @@ namespace MobfishCardboard
 
         private void RefreshCamera()
         {
+            CardboardManager.RefreshParameters();
+
             if (!CardboardManager.profileAvailable)
             {
                 SetEnableQROverlay(true);
@@ -95,6 +97,13 @@ namespace MobfishCardboard
             CardboardHeadTracker.UpdatePose();
             if (!Application.isEditor)
                 transform.localRotation = CardboardHeadTracker.trackerUnityRotation;
+
+            //todo not good here, find a way around
+            if (overlayIsOpen && CardboardManager.deviceParameter != null)
+            {
+                profileParamText.text =
+                    CardboardManager.deviceParameter.Model + " " + CardboardManager.deviceParameter.Vendor;
+            }
         }
 
         private void ScanQRCode()
@@ -106,6 +115,7 @@ namespace MobfishCardboard
         private void SetEnableQROverlay(bool shouldEnable)
         {
             continuePanel.SetActive(shouldEnable);
+            overlayIsOpen = shouldEnable;
         }
     }
 }
