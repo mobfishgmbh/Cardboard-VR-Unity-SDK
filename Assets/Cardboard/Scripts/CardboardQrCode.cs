@@ -1,4 +1,4 @@
-﻿#if (UNITY_IOS || UNITY_ANDROID) && !UNITY_EDITOR
+#if (UNITY_IOS || UNITY_ANDROID) && !UNITY_EDITOR
 #define NATIVE_PLUGIN_EXIST
 #endif
 
@@ -47,8 +47,14 @@ namespace MobfishCardboard
 
             Debug.Log("Feature Test RetrieveDeviceParam size=" + _paramsSize);
             encodedBytes = ReadByteArray(_encodedDeviceParams, _paramsSize);
-            Debug.Log("Feature Test RetrieveDeviceParam params length=" + encodedBytes.Length + ", byte=\r\n " +
-                string.Join(" , ", encodedBytes));
+            DeviceParams deviceParams = DeviceParams.Parser.ParseFrom(encodedBytes);
+            Debug.Log("Device Parameters from Unity: ");
+            Debug.Log("Vendor: " + deviceParams.Vendor);
+            Debug.Log("Model: " + deviceParams.Model);
+            Debug.Log("InterLensDistance: " + deviceParams.InterLensDistance);
+            Debug.Log("TrayToLensDistance: " + deviceParams.TrayToLensDistance);
+            Debug.Log("ScreenToLensDistance: " + deviceParams.ScreenToLensDistance);
+            Debug.Log("Feature Test RetrieveDeviceParam params length=" + encodedBytes.Length + ", byte=\r\n " + string.Join(" , ", encodedBytes));
 
         }
 
