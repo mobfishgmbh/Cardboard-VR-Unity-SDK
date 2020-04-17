@@ -3,9 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using MobfishCardboard;
-
-namespace MobfishCardboardDemo
+namespace MobfishCardboard
 {
     public class CardboardPostCamera: MonoBehaviour
     {

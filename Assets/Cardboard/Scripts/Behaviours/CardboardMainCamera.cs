@@ -7,9 +7,9 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
 
-namespace MobfishCardboardDemo
+namespace MobfishCardboard
 {
-    public class VRCamera: MonoBehaviour
+    public class CardboardMainCamera: MonoBehaviour
     {
         [Header("Cameras")]
         public Camera novrCam;
@@ -18,16 +18,11 @@ namespace MobfishCardboardDemo
 
         [Header("QR")]
         public Button scanQRButton;
+        public Text profileParamText;
         public Button continueButton;
         public GameObject continuePanel;
 
-        [Header("Other")]
-        public Text debugText;
-        public MeshFilter testEyeMeshLeft;
-        public MeshFilter testEyeMeshRight;
-
         private RenderTextureDescriptor eyeRenderTextureDesc;
-        private RenderTexture centerRenderTexture;
 
         private void Awake()
         {
@@ -92,15 +87,6 @@ namespace MobfishCardboardDemo
                 leftCam.projectionMatrix = CardboardManager.projectionMatrixLeft;
             if (!CardboardManager.projectionMatrixRight.Equals(Matrix4x4.zero))
                 rightCam.projectionMatrix = CardboardManager.projectionMatrixRight;
-
-            testEyeMeshLeft.mesh = CardboardManager.viewMeshLeft;
-            testEyeMeshRight.mesh = CardboardManager.viewMeshRight;
-
-            NativeDataExtract.Save_MeshJson(CardboardManager.viewMeshLeftRaw);
-            NativeDataExtract.Save_MeshJson(CardboardManager.viewMeshRightRaw);
-
-            (byte[], int) paramDetailVar = CardboardQrCode.GetDeviceParamsByte();
-            NativeDataExtract.Save_EncodedParam(paramDetailVar.Item1, paramDetailVar.Item2);
         }
 
         // Update is called once per frame
@@ -109,24 +95,6 @@ namespace MobfishCardboardDemo
             CardboardHeadTracker.UpdatePose();
             if (!Application.isEditor)
                 transform.localRotation = CardboardHeadTracker.trackerUnityRotation;
-            Update_DebugInfo();
-        }
-
-        private void OnApplicationFocus(bool hasFocus)
-        {
-            Debug.Log("OnApplicationFocus called, hasFocus=" + hasFocus);
-        }
-
-        private void OnApplicationPause(bool pauseStatus)
-        {
-            Debug.Log("OnApplicationPause called, pauseStatus=" + pauseStatus);
-        }
-
-        void Update_DebugInfo()
-        {
-            debugText.text = string.Format("device rot={0}, \r\nUnity rot={1}",
-                CardboardHeadTracker.trackerRawRotation.eulerAngles,
-                CardboardHeadTracker.trackerUnityRotation.eulerAngles);
         }
 
         private void ScanQRCode()
