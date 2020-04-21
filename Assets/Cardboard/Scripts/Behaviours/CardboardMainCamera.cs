@@ -96,7 +96,37 @@ namespace MobfishCardboard
         {
             CardboardHeadTracker.UpdatePose();
             if (!Application.isEditor)
+            {
                 transform.localRotation = CardboardHeadTracker.trackerUnityRotation;
+            }
+            else
+            {
+                if (Input.GetKey(KeyCode.LeftAlt))
+                {
+                    Vector3 currentEulerAngle = transform.localEulerAngles;
+                    float targetRotX = currentEulerAngle.x - Input.GetAxis("Mouse Y");
+                    if (targetRotX < 90 || targetRotX > -90)
+                    {
+                        currentEulerAngle.x = targetRotX;
+                    }
+                    float targetRotY = currentEulerAngle.y + Input.GetAxis("Mouse X");
+                    if (targetRotY > 360)
+                        targetRotY -= 360;
+                    else if (targetRotY < -360)
+                        targetRotY += 360;
+                    currentEulerAngle.y = targetRotY;
+
+                    transform.localEulerAngles = currentEulerAngle;
+                }
+                else if (Input.GetKey(KeyCode.LeftControl))
+                {
+                    Vector3 currentEulerAngle = transform.localEulerAngles;
+                    float targetRotZ = currentEulerAngle.z - Input.GetAxis("Mouse X");
+
+                    currentEulerAngle.z = targetRotZ;
+                    transform.localEulerAngles = currentEulerAngle;
+                }
+            }
 
             //todo not good here, find a way around
             if (overlayIsOpen && CardboardManager.deviceParameter != null)

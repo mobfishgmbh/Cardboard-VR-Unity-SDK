@@ -1,6 +1,6 @@
 mobfish Unity Cardboard SDK
 ==============
-Copyright 2020 mobfish GmbH.
+Copyright 2020 [mobfish GmbH]((https://mobfish.net/?utm_source=Web&utm_medium=Open-Source-Project&utm_content=Textlink&utm_campaign=iOS-Cardboard)).
 
 This is a WIP unofficial Google Cardboard Unity SDK, implemented from new Google Cardboard open source project.
 
@@ -29,4 +29,3 @@ Protocol Buffer License:
 https://github.com/protocolbuffers/protobuf/blob/master/LICENSE
 
 The "Google Cardboard" name is a trademark owned by Google and is not included within the assets licensed under the Apache License 2.0.
-
