@@ -17,7 +17,7 @@ namespace MobfishCardboard
         private void Awake()
         {
             postCam = GetComponent<Camera>();
-            postCam.projectionMatrix = Matrix4x4.identity;
+            postCam.projectionMatrix = Matrix4x4.Ortho(-1, 1, -1, 1, -0.1f, 0.5f);
         }
 
         private void OnPostRender()

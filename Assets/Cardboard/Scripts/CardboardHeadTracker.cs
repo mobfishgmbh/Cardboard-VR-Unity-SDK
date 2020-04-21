@@ -17,6 +17,8 @@ namespace MobfishCardboard
         //https://github.com/googlevr/gvr-unity-sdk/blob/v0.8.1/GoogleVR/Scripts/VRDevices/GvrDevice.cs
         //https://gamedev.stackexchange.com/questions/174107/unity-gyroscope-orientation-attitude-wrong
 
+        //todo reduce memory alloc within the file
+
         private const ulong kPrediction = 50000000;
         private static readonly Matrix4x4 flipZ = Matrix4x4.Scale(new Vector3(1, 1, -1));
 
@@ -47,6 +49,11 @@ namespace MobfishCardboard
 
         #else
 
+        private static readonly float[] editorOrientation = new[]
+        {
+            Quaternion.identity.x, Quaternion.identity.y, -Quaternion.identity.z, -Quaternion.identity.w
+        };
+
         private static IntPtr CardboardHeadTracker_create()
         {
             return IntPtr.Zero;
@@ -59,11 +66,8 @@ namespace MobfishCardboard
         private static void CardboardHeadTracker_getPose(
             IntPtr head_tracker, double timestamp_ns, float[] position, float[] orientation)
         {
-            position = new[] {0f, 0f, 0f};
-            orientation = new[]
-            {
-                Quaternion.identity.x, Quaternion.identity.y, Quaternion.identity.z, Quaternion.identity.w
-            };
+            position.Initialize();
+            editorOrientation.CopyTo(orientation, 0);
         }
 
         private static void CardboardHeadTracker_pause(IntPtr head_tracker)

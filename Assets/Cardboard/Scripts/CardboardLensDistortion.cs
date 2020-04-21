@@ -64,34 +64,14 @@ namespace MobfishCardboard
         private static void CardboardLensDistortion_getDistortionMesh(
             IntPtr lens_Distortion, CardboardEye eye, ref CardboardMesh mesh)
         {
-            if (eye == CardboardEye.kLeft)
-            {
-                mesh = new CardboardMesh()
-                {
-                    vertices = new[] {-0.65f, -0.25f, -0.65f, 0.25f, -0.125f, -0.25f, -0.125f, 0.25f},
-                    n_vertices = 4,
-                    indices = new[] {0, 1, 2, 3},
-                    n_indices = 4,
-                    uvs = new[] {0f, 0f, 0f, 1f, 1f, 0f, 1f, 1f}
-                };
-            }
-            else
-            {
-                mesh = new CardboardMesh()
-                {
-                    vertices = new[] {0.125f, -0.25f, 0.125f, 0.25f, 0.65f, -0.25f, 0.65f, 0.25f},
-                    n_vertices = 4,
-                    indices = new[] {0, 1, 2, 3},
-                    n_indices = 4,
-                    uvs = new[] {0f, 0f, 0f, 1f, 1f, 0f, 1f, 1f}
-                };
-            }
+            mesh = CardboardUtility.CreateMockupCardboardMesh(eye);
         }
 
         private static void CardboardLensDistortion_getEyeMatrices(
             IntPtr lens_Distortion, float[] projection_matrix, float[] eye_from_head_matrix, CardboardEye eye)
         {
-            projection_matrix.Initialize();
+            CardboardUtility.Matrix4x4ToArray(Matrix4x4.Perspective(70, 0.8f, 0.5f, 1000)).CopyTo(projection_matrix, 0);
+            // projection_matrix.Initialize();
             eye_from_head_matrix.Initialize();
         }
 
@@ -172,14 +152,9 @@ namespace MobfishCardboard
             if (projectionMatrixLeft == null || projectionMatrixRight == null)
                 RefreshProjectionMatrix();
 
-            Matrix4x4 result = new Matrix4x4();
-
             float[] targetMatrix = eye == CardboardEye.kLeft ? projectionMatrixLeft : projectionMatrixRight;
-            for (int i = 0; i < targetMatrix.Length; i++)
-            {
-                result[i] = targetMatrix[i];
-            }
-            return result;
+
+            return CardboardUtility.ArrayToMatrix4x4(targetMatrix);
         }
 
         public static Matrix4x4 GetEyeFromHeadMatrix(CardboardEye eye)
@@ -187,14 +162,9 @@ namespace MobfishCardboard
             if (eyeFromHeadMatrixLeft == null || eyeFromHeadMatrixRight == null)
                 RefreshProjectionMatrix();
 
-            Matrix4x4 result = new Matrix4x4();
-
             float[] targetMatrix = eye == CardboardEye.kLeft ? eyeFromHeadMatrixLeft : eyeFromHeadMatrixRight;
-            for (int i = 0; i < targetMatrix.Length; i++)
-            {
-                result[i] = targetMatrix[i];
-            }
-            return result;
+
+            return CardboardUtility.ArrayToMatrix4x4(targetMatrix);
         }
 
 

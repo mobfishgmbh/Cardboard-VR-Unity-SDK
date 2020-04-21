@@ -53,8 +53,11 @@ namespace MobfishCardboardDemo
             testEyeMeshLeft.mesh = CardboardManager.viewMeshLeft;
             testEyeMeshRight.mesh = CardboardManager.viewMeshRight;
 
-            NativeDataExtract.Save_MeshJson(CardboardManager.viewMeshLeftRaw);
-            NativeDataExtract.Save_MeshJson(CardboardManager.viewMeshRightRaw);
+            if (!Application.isEditor)
+            {
+                NativeDataExtract.Save_MeshJson(CardboardManager.viewMeshLeftRaw);
+                NativeDataExtract.Save_MeshJson(CardboardManager.viewMeshRightRaw);
+            }
 
             // (byte[], int) paramDetailVar = CardboardQrCode.GetDeviceParamsByte();
             // NativeDataExtract.Save_EncodedParam(paramDetailVar.Item1, paramDetailVar.Item2);
