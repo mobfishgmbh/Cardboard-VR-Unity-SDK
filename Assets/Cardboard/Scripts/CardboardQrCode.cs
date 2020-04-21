@@ -13,12 +13,12 @@ namespace MobfishCardboard
         private static IntPtr _encodedDeviceParams;
         private static int _paramsSize;
         private static byte[] encodedBytes;
+        private static DeviceParams decodedParams;
 
         #if NATIVE_PLUGIN_EXIST
         [DllImport(CardboardUtility.DLLName)]
         private static extern void CardboardQrCode_scanQrCodeAndSaveDeviceParams();
 
-        //todo is this correct?
         //https://developers.google.com/cardboard/reference/c/group/qrcode-scanner#cardboardqrcode_getsaveddeviceparams
         [DllImport(CardboardUtility.DLLName)]
         private static extern void CardboardQrCode_getSavedDeviceParams(ref IntPtr encoded_device_params, ref int size);
@@ -47,9 +47,14 @@ namespace MobfishCardboard
 
             Debug.Log("Feature Test RetrieveDeviceParam size=" + _paramsSize);
             encodedBytes = ReadByteArray(_encodedDeviceParams, _paramsSize);
-            Debug.Log("Feature Test RetrieveDeviceParam params length=" + encodedBytes.Length + ", byte=\r\n " +
-                string.Join(" , ", encodedBytes));
 
+            if (_paramsSize > 0)
+                decodedParams = DeviceParams.Parser.ParseFrom(encodedBytes);
+
+            Debug.LogFormat("Feature Test RetrieveDeviceParam params length={0}, byte=\r\n {1}",
+                encodedBytes.Length, string.Join(" , ", encodedBytes));
+            Debug.LogFormat("Feature Test decode device params: \r\n{0}",
+                CardboardUtility.DeviceParamsToString(decodedParams));
         }
 
         public static (IntPtr, int) GetDeviceParamsPointer()
@@ -57,9 +62,14 @@ namespace MobfishCardboard
             return (_encodedDeviceParams, _paramsSize);
         }
 
-        public static (byte[], int) GetDeviceParamsByte()
+        // public static (byte[], int) GetDeviceParamsByte()
+        // {
+        //     return (encodedBytes, _paramsSize);
+        // }
+
+        public static DeviceParams GetDecodedDeviceParams()
         {
-            return (encodedBytes, _paramsSize);
+            return decodedParams;
         }
 
         private static byte[] ReadByteArray(IntPtr pointer, int size)

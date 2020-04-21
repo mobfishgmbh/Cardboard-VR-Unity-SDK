@@ -3,11 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using MobfishCardboard;
-
-namespace MobfishCardboardDemo
+namespace MobfishCardboard
 {
-    public class VRPostCamera: MonoBehaviour
+    public class CardboardPostCamera: MonoBehaviour
     {
         [SerializeField]
         private Material eyeMaterialLeft;
@@ -19,12 +17,12 @@ namespace MobfishCardboardDemo
         private void Awake()
         {
             postCam = GetComponent<Camera>();
-            postCam.projectionMatrix = Matrix4x4.identity;
+            postCam.projectionMatrix = Matrix4x4.Ortho(-1, 1, -1, 1, -0.1f, 0.5f);
         }
 
         private void OnPostRender()
         {
-            if (CardboardManager.viewMeshLeft == null || CardboardManager.viewMeshRight == null)
+            if (!CardboardManager.profileAvailable)
                 return;
 
             eyeMaterialLeft.mainTexture = CardboardManager.viewTextureLeft;
@@ -41,10 +39,5 @@ namespace MobfishCardboardDemo
 
         }
 
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
     }
 }

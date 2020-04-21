@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
 using UnityEngine;
 
 namespace MobfishCardboard
@@ -7,6 +9,36 @@ namespace MobfishCardboard
     {
         public const string DLLName = "__Internal";
         public const int kResolution = 40;
+
+        public static CardboardMesh CreateMockupCardboardMesh(CardboardEye eye)
+        {
+            CardboardMesh result;
+
+            if (eye == CardboardEye.kLeft)
+            {
+                result = new CardboardMesh()
+                {
+                    vertices = new[] {-0.9f, -0.9f, -0.9f, 0.9f, -0.1f, -0.9f, -0.1f, 0.9f},
+                    n_vertices = 4,
+                    indices = new[] {0, 1, 2, 3},
+                    n_indices = 4,
+                    uvs = new[] {0f, 0f, 0f, 1f, 1f, 0f, 1f, 1f}
+                };
+            }
+            else
+            {
+                result = new CardboardMesh()
+                {
+                    vertices = new[] {0.1f, -0.9f, 0.1f, 0.9f, 0.9f, -0.9f, 0.9f, 0.9f},
+                    n_vertices = 4,
+                    indices = new[] {0, 1, 2, 3},
+                    n_indices = 4,
+                    uvs = new[] {0f, 0f, 0f, 1f, 1f, 0f, 1f, 1f}
+                };
+            }
+
+            return result;
+        }
 
         public static Mesh ConvertCardboardMesh_LineStrip(CardboardMesh sourceMesh)
         {
@@ -84,6 +116,51 @@ namespace MobfishCardboard
             // result.triangles = newIndices.ToArray();
             result.SetIndices(newIndices.ToArray(), MeshTopology.Triangles, 0);
 
+            return result;
+        }
+
+        public static string DeviceParamsToString(DeviceParams deviceParams)
+        {
+            if (deviceParams == null)
+                return string.Empty;
+
+            StringBuilder result = new StringBuilder();
+            result.Append("Vendor: ");
+            result.AppendLine(deviceParams.Vendor);
+            result.Append("Model: ");
+            result.AppendLine(deviceParams.Model);
+            result.Append("InterLensDistance: ");
+            result.AppendLine(deviceParams.InterLensDistance.ToString());
+            result.Append("ScreenToLensDistance: ");
+            result.AppendLine(deviceParams.ScreenToLensDistance.ToString());
+            result.Append("TrayToLensDistance: ");
+            result.AppendLine(deviceParams.TrayToLensDistance.ToString());
+
+            return result.ToString();
+        }
+
+        public static float[] Matrix4x4ToArray(Matrix4x4 source)
+        {
+            int length = 16;
+
+            float[] target=new float[length];
+
+            for (int i = 0; i < length; i++)
+            {
+                target[i] = source[i];
+            }
+
+            return target;
+        }
+
+        public static Matrix4x4 ArrayToMatrix4x4(float[] array)
+        {
+            Matrix4x4 result = new Matrix4x4();
+
+            for (int i = 0; i < array.Length; i++)
+            {
+                result[i] = array[i];
+            }
             return result;
         }
     }

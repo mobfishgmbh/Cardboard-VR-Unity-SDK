@@ -1,6 +1,6 @@
 mobfish Unity Cardboard SDK
 ==============
-Copyright 2020 mobfish GmbH.
+Copyright 2020 [mobfish GmbH]((https://mobfish.net/?utm_source=Web&utm_medium=Open-Source-Project&utm_content=Textlink&utm_campaign=iOS-Cardboard)).
 
 This is a WIP unofficial Google Cardboard Unity SDK, implemented from new Google Cardboard open source project.
 
@@ -11,6 +11,13 @@ This project will focus on iOS system first.
 Official Google Cardboard SDK:  
 https://github.com/googlevr/cardboard
 
+
+## Used External Sources
+
+Protocol Buffer:   
+https://github.com/protocolbuffers/protobuf  
+DLL file is included in this repository.
+
 ## License
 
 Please see the [LICENSE](/LICENSE.md) file.
@@ -18,5 +25,7 @@ Please see the [LICENSE](/LICENSE.md) file.
 Official Google Cardboard SDK License:  
 https://github.com/googlevr/cardboard/blob/master/LICENSE
 
-The "Google Cardboard" name is a trademark owned by Google and is not included within the assets licensed under the Apache License 2.0.
+Protocol Buffer License:  
+https://github.com/protocolbuffers/protobuf/blob/master/LICENSE
 
+The "Google Cardboard" name is a trademark owned by Google and is not included within the assets licensed under the Apache License 2.0.
