@@ -1,6 +1,6 @@
 mobfish Unity Cardboard SDK
 ==============
-Copyright 2020 [mobfish GmbH]((https://mobfish.net/?utm_source=Web&utm_medium=Open-Source-Project&utm_content=Textlink&utm_campaign=iOS-Cardboard)).
+Copyright 2020 [mobfish GmbH](https://mobfish.net/?utm_source=Web&utm_medium=Open-Source-Project&utm_content=Textlink&utm_campaign=iOS-Cardboard).
 
 This is a WIP unofficial Google Cardboard Unity SDK, implemented from new Google Cardboard open source project.
 
