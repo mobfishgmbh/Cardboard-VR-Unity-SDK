@@ -17,7 +17,7 @@ namespace MobfishCardboard
 
         public static bool profileAvailable { get; private set; }
 
-        public static event Action cardboardProfileChanged;
+        public static event Action deviceParamsChangeEvent;
 
         public static void InitCardboard()
         {
@@ -33,7 +33,7 @@ namespace MobfishCardboard
             InitDeviceProfile();
             InitCameraProperties();
 
-            cardboardProfileChanged?.Invoke();
+            deviceParamsChangeEvent?.Invoke();
         }
 
         private static void InitDeviceProfile()

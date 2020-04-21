@@ -15,13 +15,6 @@ namespace MobfishCardboard
         public Camera leftCam;
         public Camera rightCam;
 
-        [Header("QR")]
-        public Button scanQRButton;
-        public Text profileParamText;
-        public Button refreshButton;
-        public Button continueButton;
-        public GameObject continuePanel;
-
         private RenderTextureDescriptor eyeRenderTextureDesc;
         private bool overlayIsOpen;
 
@@ -35,17 +28,13 @@ namespace MobfishCardboard
             SetupRenderTexture();
 
             CardboardManager.InitCardboard();
-
-            SetEnableQROverlay(false);
-            continueButton.onClick.AddListener(ContinueClicked);
-            scanQRButton.onClick.AddListener(ScanQRCode);
-            refreshButton.onClick.AddListener(RefreshCamera);
         }
 
         // Start is called before the first frame update
         void Start()
         {
             RefreshCamera();
+            CardboardManager.deviceParamsChangeEvent += RefreshCamera;
         }
 
         private void SetupRenderTexture()
@@ -68,20 +57,10 @@ namespace MobfishCardboard
             CardboardManager.SetRenderTexture(newLeft, newRight);
         }
 
-        private void ContinueClicked()
-        {
-            RefreshCamera();
-
-            SetEnableQROverlay(false);
-        }
-
         private void RefreshCamera()
         {
-            CardboardManager.RefreshParameters();
-
             if (!CardboardManager.profileAvailable)
             {
-                SetEnableQROverlay(true);
                 return;
             }
 
@@ -94,58 +73,6 @@ namespace MobfishCardboard
         // Update is called once per frame
         void Update()
         {
-            CardboardHeadTracker.UpdatePose();
-            if (!Application.isEditor)
-            {
-                transform.localRotation = CardboardHeadTracker.trackerUnityRotation;
-            }
-            else
-            {
-                if (Input.GetKey(KeyCode.LeftAlt))
-                {
-                    Vector3 currentEulerAngle = transform.localEulerAngles;
-                    float targetRotX = currentEulerAngle.x - Input.GetAxis("Mouse Y");
-                    if (targetRotX < 90 || targetRotX > -90)
-                    {
-                        currentEulerAngle.x = targetRotX;
-                    }
-                    float targetRotY = currentEulerAngle.y + Input.GetAxis("Mouse X");
-                    if (targetRotY > 360)
-                        targetRotY -= 360;
-                    else if (targetRotY < -360)
-                        targetRotY += 360;
-                    currentEulerAngle.y = targetRotY;
-
-                    transform.localEulerAngles = currentEulerAngle;
-                }
-                else if (Input.GetKey(KeyCode.LeftControl))
-                {
-                    Vector3 currentEulerAngle = transform.localEulerAngles;
-                    float targetRotZ = currentEulerAngle.z - Input.GetAxis("Mouse X");
-
-                    currentEulerAngle.z = targetRotZ;
-                    transform.localEulerAngles = currentEulerAngle;
-                }
-            }
-
-            //todo not good here, find a way around
-            if (overlayIsOpen && CardboardManager.deviceParameter != null)
-            {
-                profileParamText.text =
-                    CardboardManager.deviceParameter.Model + " " + CardboardManager.deviceParameter.Vendor;
-            }
-        }
-
-        private void ScanQRCode()
-        {
-            CardboardQrCode.StartScanQrCode();
-            SetEnableQROverlay(true);
-        }
-
-        private void SetEnableQROverlay(bool shouldEnable)
-        {
-            continuePanel.SetActive(shouldEnable);
-            overlayIsOpen = shouldEnable;
         }
     }
 }
