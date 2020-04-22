@@ -27,7 +27,10 @@ namespace MobfishCardboard
         // Start is called before the first frame update
         void Start()
         {
-
+            if (!CardboardManager.profileAvailable)
+            {
+                SetEnableQROverlay(true);
+            }
         }
 
         private void ScanQRCode()
