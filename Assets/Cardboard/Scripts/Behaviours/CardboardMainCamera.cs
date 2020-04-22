@@ -68,6 +68,14 @@ namespace MobfishCardboard
                 leftCam.projectionMatrix = CardboardManager.projectionMatrixLeft;
             if (!CardboardManager.projectionMatrixRight.Equals(Matrix4x4.zero))
                 rightCam.projectionMatrix = CardboardManager.projectionMatrixRight;
+
+            if (CardboardManager.deviceParameter != null)
+            {
+                leftCam.transform.localPosition =
+                    new Vector3(-CardboardManager.deviceParameter.InterLensDistance / 2, 0, 0);
+                rightCam.transform.localPosition =
+                    new Vector3(CardboardManager.deviceParameter.InterLensDistance / 2, 0, 0);
+            }
         }
 
         // Update is called once per frame
