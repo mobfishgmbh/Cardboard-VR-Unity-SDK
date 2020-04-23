@@ -13,6 +13,7 @@ namespace MobfishCardboardDemo
         public Text debugText;
         public MeshFilter testEyeMeshLeft;
         public MeshFilter testEyeMeshRight;
+        public Camera leftCam;
 
         // Start is called before the first frame update
         void Start()
@@ -33,9 +34,10 @@ namespace MobfishCardboardDemo
         // Update is called once per frame
         void Update()
         {
-            debugText.text = string.Format("device rot={0}, \r\nUnity rot={1}",
+            debugText.text = string.Format("device rot={0}, \r\nUnity rot={1}, \r\nLeftEyePos={2}",
                 CardboardHeadTracker.trackerRawRotation.eulerAngles,
-                CardboardHeadTracker.trackerUnityRotation.eulerAngles);
+                CardboardHeadTracker.trackerUnityRotation.eulerAngles,
+                leftCam.transform.localPosition);
         }
 
         private void OnApplicationFocus(bool hasFocus)

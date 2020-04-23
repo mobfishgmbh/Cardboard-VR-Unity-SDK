@@ -42,11 +42,12 @@ namespace MobfishCardboard
             eyeRenderTextureDesc = new RenderTextureDescriptor()
             {
                 dimension = TextureDimension.Tex2D,
-                width = Screen.width,
+                width = Screen.width / 2,
                 height = Screen.height,
                 depthBufferBits = 16,
                 volumeDepth = 1,
-                msaaSamples = 2,
+                msaaSamples = 1,
+                vrUsage = VRTextureUsage.OneEye
             };
 
             RenderTexture newLeft = new RenderTexture(eyeRenderTextureDesc);
@@ -64,17 +65,34 @@ namespace MobfishCardboard
                 return;
             }
 
-            if (!CardboardManager.projectionMatrixLeft.Equals(Matrix4x4.zero))
-                leftCam.projectionMatrix = CardboardManager.projectionMatrixLeft;
-            if (!CardboardManager.projectionMatrixRight.Equals(Matrix4x4.zero))
-                rightCam.projectionMatrix = CardboardManager.projectionMatrixRight;
+            RefreshCamera_Eye(leftCam,
+                CardboardManager.projectionMatrixLeft, CardboardManager.eyeFromHeadMatrixLeft);
+            RefreshCamera_Eye(rightCam,
+                CardboardManager.projectionMatrixRight, CardboardManager.eyeFromHeadMatrixRight);
 
-            if (CardboardManager.deviceParameter != null)
+
+            // if (CardboardManager.deviceParameter != null)
+            // {
+            //     leftCam.transform.localPosition =
+            //         new Vector3(-CardboardManager.deviceParameter.InterLensDistance / 2, 0, 0);
+            //     rightCam.transform.localPosition =
+            //         new Vector3(CardboardManager.deviceParameter.InterLensDistance / 2, 0, 0);
+            // }
+        }
+
+        private static void RefreshCamera_Eye(Camera eyeCam, Matrix4x4 projectionMat, Matrix4x4 eyeFromHeadMat)
+        {
+            if (!projectionMat.Equals(Matrix4x4.zero))
+                eyeCam.projectionMatrix = projectionMat;
+
+            if (!eyeFromHeadMat.Equals(Matrix4x4.zero))
             {
-                leftCam.transform.localPosition =
-                    new Vector3(-CardboardManager.deviceParameter.InterLensDistance / 2, 0, 0);
-                rightCam.transform.localPosition =
-                    new Vector3(CardboardManager.deviceParameter.InterLensDistance / 2, 0, 0);
+                Transform camTransform = eyeCam.transform;
+                Matrix4x4 newPoseMat = eyeFromHeadMat * CardboardUtility.GetTransformTRSMatrix(camTransform);
+
+                Pose newPoseFinal = CardboardUtility.GetPoseFromTRSMatrix(newPoseMat);
+                camTransform.localPosition = newPoseFinal.position;
+                camTransform.localRotation = newPoseFinal.rotation;
             }
         }
 

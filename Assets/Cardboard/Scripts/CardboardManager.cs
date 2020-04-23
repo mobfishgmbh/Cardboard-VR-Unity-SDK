@@ -14,10 +14,13 @@ namespace MobfishCardboard
         public static CardboardMesh viewMeshRightRaw { get; private set; }
         public static Matrix4x4 projectionMatrixLeft { get; private set; }
         public static Matrix4x4 projectionMatrixRight { get; private set; }
+        public static Matrix4x4 eyeFromHeadMatrixLeft { get; private set; }
+        public static Matrix4x4 eyeFromHeadMatrixRight { get; private set; }
 
         public static bool profileAvailable { get; private set; }
 
         public static event Action deviceParamsChangeEvent;
+        public static event Action renderTextureResetEvent;
 
         public static void InitCardboard()
         {
@@ -64,6 +67,9 @@ namespace MobfishCardboard
             projectionMatrixLeft = CardboardLensDistortion.GetProjectionMatrix(CardboardEye.kLeft);
             projectionMatrixRight = CardboardLensDistortion.GetProjectionMatrix(CardboardEye.kRight);
 
+            eyeFromHeadMatrixLeft = CardboardLensDistortion.GetEyeFromHeadMatrix(CardboardEye.kLeft);
+            eyeFromHeadMatrixRight = CardboardLensDistortion.GetEyeFromHeadMatrix(CardboardEye.kRight);
+
             (CardboardMesh, CardboardMesh) eyeMeshes = CardboardLensDistortion.GetEyeMeshes();
             viewMeshLeftRaw = eyeMeshes.Item1;
             viewMeshRightRaw = eyeMeshes.Item2;
@@ -74,8 +80,15 @@ namespace MobfishCardboard
 
         public static void SetRenderTexture(RenderTexture newLeft, RenderTexture newRight)
         {
+            if (viewTextureLeft != null)
+                viewTextureLeft.Release();
+            if (viewTextureRight != null)
+                viewTextureRight.Release();
+
             viewTextureLeft = newLeft;
             viewTextureRight = newRight;
+
+            renderTextureResetEvent?.Invoke();
         }
     }
 }

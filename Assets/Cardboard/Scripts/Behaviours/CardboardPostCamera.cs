@@ -20,24 +20,28 @@ namespace MobfishCardboard
             postCam.projectionMatrix = Matrix4x4.Ortho(-1, 1, -1, 1, -0.1f, 0.5f);
         }
 
+        // Start is called before the first frame update
+        void Start()
+        {
+            ApplyRenderTexture();
+            CardboardManager.renderTextureResetEvent += ApplyRenderTexture;
+        }
+
         private void OnPostRender()
         {
             if (!CardboardManager.profileAvailable)
                 return;
 
-            eyeMaterialLeft.mainTexture = CardboardManager.viewTextureLeft;
-            eyeMaterialRight.mainTexture = CardboardManager.viewTextureRight;
             eyeMaterialLeft.SetPass(0);
             Graphics.DrawMeshNow(CardboardManager.viewMeshLeft, transform.position, transform.rotation);
             eyeMaterialRight.SetPass(0);
             Graphics.DrawMeshNow(CardboardManager.viewMeshRight, transform.position, transform.rotation);
         }
 
-        // Start is called before the first frame update
-        void Start()
+        private void ApplyRenderTexture()
         {
-
+            eyeMaterialLeft.mainTexture = CardboardManager.viewTextureLeft;
+            eyeMaterialRight.mainTexture = CardboardManager.viewTextureRight;
         }
-
     }
 }

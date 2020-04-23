@@ -258,6 +258,7 @@ MonoBehaviour:
   debugText: {fileID: 1030967910}
   testEyeMeshLeft: {fileID: 679122516}
   testEyeMeshRight: {fileID: 1141839437}
+  leftCam: {fileID: 1236660755}
 --- !u!33 &679122516 stripped
 MeshFilter:
   m_CorrespondingSourceObject: {fileID: 6572400263316432975, guid: 8faff49d6a17536468d850633a49d158,
@@ -346,6 +347,12 @@ MeshFilter:
   m_CorrespondingSourceObject: {fileID: 6572400263789635670, guid: 8faff49d6a17536468d850633a49d158,
     type: 3}
   m_PrefabInstance: {fileID: 6572400262648069659}
+  m_PrefabAsset: {fileID: 0}
+--- !u!20 &1236660755 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 2266509654338263398, guid: eeb2878f7a84c8743bc229cfcb584f78,
+    type: 3}
+  m_PrefabInstance: {fileID: 2266509654638412761}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1924849946
 GameObject:
