@@ -22,12 +22,12 @@ namespace MobfishCardboardDemo
 
         private void OnEnable()
         {
-            CardboardManager.cardboardProfileChanged += RefreshCameraProperty;
+            CardboardManager.deviceParamsChangeEvent += RefreshCameraProperty;
         }
 
         private void OnDisable()
         {
-            CardboardManager.cardboardProfileChanged -= RefreshCameraProperty;
+            CardboardManager.deviceParamsChangeEvent -= RefreshCameraProperty;
         }
 
         // Update is called once per frame

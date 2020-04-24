@@ -16,7 +16,6 @@ namespace MobfishCardboard
         private static DeviceParams decodedParams;
 
         public delegate void QRCodeScannedCallbackType();
-        static QRCodeScannedCallbackType QRCallback;
 
 #if NATIVE_PLUGIN_EXIST
         [DllImport(CardboardUtility.DLLName)]
@@ -47,7 +46,7 @@ namespace MobfishCardboard
         public static void QRCodeScannedCallback()
         {
             Debug.Log("QRCodeScannedCallback received in Unity!!");
-            QRCallback?.Invoke();
+            CardboardManager.RefreshParameters();
         }
 
         public static void StartScanQrCode()
@@ -55,9 +54,8 @@ namespace MobfishCardboard
             CardboardQrCode_scanQrCodeAndSaveDeviceParams();
         }
 
-        public static void RegisterObserver(QRCodeScannedCallbackType _callback)
+        public static void RegisterObserver()
         {
-            QRCallback = _callback;
 #if UNITY_IOS && !UNITY_EDITOR
             if(Application.platform == RuntimePlatform.IPhonePlayer)
             {
@@ -68,7 +66,6 @@ namespace MobfishCardboard
 
         public static void DeRegisterObserver()
         {
-            QRCallback = null;
 #if UNITY_IOS && !UNITY_EDITOR
             if(Application.platform == RuntimePlatform.IPhonePlayer)
             {
