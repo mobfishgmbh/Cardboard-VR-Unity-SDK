@@ -46,8 +46,13 @@ namespace MobfishCardboard
         void Start()
         {
             RefreshCamera();
+            CardboardQrCode.RegisterObserver(RefreshCamera);
         }
 
+        private void OnDestroy()
+        {
+            CardboardQrCode.DeRegisterObserver();
+        }
         private void SetupRenderTexture()
         {
             eyeRenderTextureDesc = new RenderTextureDescriptor()

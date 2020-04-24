@@ -15,7 +15,10 @@ namespace MobfishCardboard
         private static byte[] encodedBytes;
         private static DeviceParams decodedParams;
 
-        #if NATIVE_PLUGIN_EXIST
+        public delegate void QRCodeScannedCallbackType();
+        static QRCodeScannedCallbackType QRCallback;
+
+#if NATIVE_PLUGIN_EXIST
         [DllImport(CardboardUtility.DLLName)]
         private static extern void CardboardQrCode_scanQrCodeAndSaveDeviceParams();
 
@@ -23,7 +26,11 @@ namespace MobfishCardboard
         [DllImport(CardboardUtility.DLLName)]
         private static extern void CardboardQrCode_getSavedDeviceParams(ref IntPtr encoded_device_params, ref int size);
 
-        #else
+        [DllImport(CardboardUtility.DLLName)]
+        private static extern void registerObserver(QRCodeScannedCallbackType _callback);
+        [DllImport(CardboardUtility.DLLName)]
+        private static extern void deRegisterObserver();
+#else
 
         private static void CardboardQrCode_scanQrCodeAndSaveDeviceParams()
         {
@@ -34,13 +41,41 @@ namespace MobfishCardboard
             size = 0;
         }
 
-        #endif
+#endif
+
+        [AOT.MonoPInvokeCallback(typeof(QRCodeScannedCallbackType))]
+        public static void QRCodeScannedCallback()
+        {
+            Debug.Log("QRCodeScannedCallback received in Unity!!");
+            QRCallback?.Invoke();
+        }
 
         public static void StartScanQrCode()
         {
             CardboardQrCode_scanQrCodeAndSaveDeviceParams();
         }
 
+        public static void RegisterObserver(QRCodeScannedCallbackType _callback)
+        {
+            QRCallback = _callback;
+#if UNITY_IOS && !UNITY_EDITOR
+            if(Application.platform == RuntimePlatform.IPhonePlayer)
+            {
+                registerObserver(QRCodeScannedCallback);
+            }
+#endif
+        }
+
+        public static void DeRegisterObserver()
+        {
+            QRCallback = null;
+#if UNITY_IOS && !UNITY_EDITOR
+            if(Application.platform == RuntimePlatform.IPhonePlayer)
+            {
+                deRegisterObserver();
+            }
+#endif
+        }
         public static void RetrieveDeviceParam()
         {
             CardboardQrCode_getSavedDeviceParams(ref _encodedDeviceParams, ref _paramsSize);
