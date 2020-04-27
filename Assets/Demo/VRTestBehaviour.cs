@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
 using MobfishCardboard;
 
 namespace MobfishCardboardDemo
@@ -11,14 +10,19 @@ namespace MobfishCardboardDemo
     public class VRTestBehaviour: MonoBehaviour
     {
         public Text debugText;
+        public Text debugTextStatic;
         public MeshFilter testEyeMeshLeft;
         public MeshFilter testEyeMeshRight;
-        public Camera leftCam;
 
         // Start is called before the first frame update
         void Start()
         {
+            CardboardManager.deviceParamsChangeEvent += DeviceParamsChanged;
+        }
 
+        private void DeviceParamsChanged()
+        {
+            debugTextStatic.text = string.Format("eyefromhead=\r\n{0}", CardboardManager.eyeFromHeadMatrixLeft);
         }
 
         private void OnEnable()
@@ -34,10 +38,9 @@ namespace MobfishCardboardDemo
         // Update is called once per frame
         void Update()
         {
-            debugText.text = string.Format("device rot={0}, \r\nUnity rot={1}, \r\nLeftEyePos={2}",
+            debugText.text = string.Format("device rot={0}, \r\nUnity rot={1}",
                 CardboardHeadTracker.trackerRawRotation.eulerAngles,
-                CardboardHeadTracker.trackerUnityRotation.eulerAngles,
-                leftCam.transform.localPosition);
+                CardboardHeadTracker.trackerUnityRotation.eulerAngles);
         }
 
         private void OnApplicationFocus(bool hasFocus)
@@ -66,5 +69,5 @@ namespace MobfishCardboardDemo
         }
     }
 
-    
+
 }
