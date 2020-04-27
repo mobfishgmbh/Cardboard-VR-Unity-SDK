@@ -34,7 +34,15 @@ namespace MobfishCardboard
         void Start()
         {
             RefreshCamera();
+            CardboardQrCode.RegisterObserver();
             CardboardManager.deviceParamsChangeEvent += RefreshCamera;
+        }
+
+        private void OnDestroy()
+        {
+            CardboardQrCode.DeRegisterObserver();
+            CardboardManager.deviceParamsChangeEvent -= RefreshCamera;
+
         }
 
         private void SetupRenderTexture()

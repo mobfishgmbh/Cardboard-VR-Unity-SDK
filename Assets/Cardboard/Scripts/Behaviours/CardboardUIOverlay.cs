@@ -31,8 +31,13 @@ namespace MobfishCardboard
             {
                 SetEnableQROverlay(true);
             }
+            CardboardManager.deviceParamsChangeEvent += TriggerRefresh;
         }
 
+        private void OnDestroy()
+        {
+            CardboardManager.deviceParamsChangeEvent -= TriggerRefresh;
+        }
         private void ScanQRCode()
         {
             CardboardQrCode.StartScanQrCode();
@@ -59,7 +64,7 @@ namespace MobfishCardboard
 
         private void TriggerRefresh()
         {
-            CardboardManager.RefreshParameters();
+            //CardboardManager.RefreshParameters();
 
             if (!CardboardManager.profileAvailable)
             {
