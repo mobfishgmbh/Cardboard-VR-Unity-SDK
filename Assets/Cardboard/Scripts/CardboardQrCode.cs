@@ -15,9 +15,9 @@ namespace MobfishCardboard
         private static byte[] encodedBytes;
         private static DeviceParams decodedParams;
 
-        public delegate void QRCodeScannedCallbackType();
+        private delegate void QRCodeScannedCallbackType();
 
-#if NATIVE_PLUGIN_EXIST
+        #if NATIVE_PLUGIN_EXIST
         [DllImport(CardboardUtility.DLLName)]
         private static extern void CardboardQrCode_scanQrCodeAndSaveDeviceParams();
 
@@ -25,11 +25,17 @@ namespace MobfishCardboard
         [DllImport(CardboardUtility.DLLName)]
         private static extern void CardboardQrCode_getSavedDeviceParams(ref IntPtr encoded_device_params, ref int size);
 
+        //New method for libCardboardUtility, iOS only.
+        #if UNITY_IOS
+
         [DllImport(CardboardUtility.DLLName)]
         private static extern void registerObserver(QRCodeScannedCallbackType _callback);
         [DllImport(CardboardUtility.DLLName)]
         private static extern void deRegisterObserver();
-#else
+
+        #endif
+
+        #else
 
         private static void CardboardQrCode_scanQrCodeAndSaveDeviceParams()
         {
@@ -40,10 +46,10 @@ namespace MobfishCardboard
             size = 0;
         }
 
-#endif
+        #endif
 
         [AOT.MonoPInvokeCallback(typeof(QRCodeScannedCallbackType))]
-        public static void QRCodeScannedCallback()
+        private static void QRCodeScannedCallback()
         {
             Debug.Log("QRCodeScannedCallback received in Unity!!");
             CardboardManager.RefreshParameters();
@@ -56,23 +62,18 @@ namespace MobfishCardboard
 
         public static void RegisterObserver()
         {
-#if UNITY_IOS && !UNITY_EDITOR
-            if(Application.platform == RuntimePlatform.IPhonePlayer)
-            {
-                registerObserver(QRCodeScannedCallback);
-            }
-#endif
+            #if NATIVE_PLUGIN_EXIST && UNITY_IOS
+            registerObserver(QRCodeScannedCallback);
+            #endif
         }
 
         public static void DeRegisterObserver()
         {
-#if UNITY_IOS && !UNITY_EDITOR
-            if(Application.platform == RuntimePlatform.IPhonePlayer)
-            {
-                deRegisterObserver();
-            }
-#endif
+            #if NATIVE_PLUGIN_EXIST && UNITY_IOS
+            deRegisterObserver();
+            #endif
         }
+
         public static void RetrieveDeviceParam()
         {
             CardboardQrCode_getSavedDeviceParams(ref _encodedDeviceParams, ref _paramsSize);

@@ -34,13 +34,11 @@ namespace MobfishCardboard
         void Start()
         {
             RefreshCamera();
-            CardboardQrCode.RegisterObserver();
             CardboardManager.deviceParamsChangeEvent += RefreshCamera;
         }
 
         private void OnDestroy()
         {
-            CardboardQrCode.DeRegisterObserver();
             CardboardManager.deviceParamsChangeEvent -= RefreshCamera;
 
         }
@@ -79,13 +77,13 @@ namespace MobfishCardboard
                 CardboardManager.projectionMatrixRight, CardboardManager.eyeFromHeadMatrixRight);
 
 
-            if (CardboardManager.deviceParameter != null)
-            {
-                leftCam.transform.localPosition =
-                    new Vector3(-CardboardManager.deviceParameter.InterLensDistance / 2, 0, 0);
-                rightCam.transform.localPosition =
-                    new Vector3(CardboardManager.deviceParameter.InterLensDistance / 2, 0, 0);
-            }
+            // if (CardboardManager.deviceParameter != null)
+            // {
+            //     leftCam.transform.localPosition =
+            //         new Vector3(-CardboardManager.deviceParameter.InterLensDistance / 2, 0, 0);
+            //     rightCam.transform.localPosition =
+            //         new Vector3(CardboardManager.deviceParameter.InterLensDistance / 2, 0, 0);
+            // }
         }
 
         private static void RefreshCamera_Eye(Camera eyeCam, Matrix4x4 projectionMat, Matrix4x4 eyeFromHeadMat)
@@ -93,15 +91,14 @@ namespace MobfishCardboard
             if (!projectionMat.Equals(Matrix4x4.zero))
                 eyeCam.projectionMatrix = projectionMat;
 
-            // if (!eyeFromHeadMat.Equals(Matrix4x4.zero))
-            // {
-            //     Transform camTransform = eyeCam.transform;
-            //     Matrix4x4 newPoseMat = eyeFromHeadMat * CardboardUtility.GetTransformTRSMatrix(camTransform);
-            //
-            //     Pose newPoseFinal = CardboardUtility.GetPoseFromTRSMatrix(newPoseMat);
-            //     camTransform.localPosition = newPoseFinal.position;
-            //     camTransform.localRotation = newPoseFinal.rotation;
-            // }
+            //https://github.com/googlevr/cardboard/blob/master/sdk/lens_distortion.cc
+            if (!eyeFromHeadMat.Equals(Matrix4x4.zero))
+            {
+                Pose eyeFromHeadPoseGL = CardboardUtility.GetPoseFromTRSMatrix(eyeFromHeadMat);
+                eyeFromHeadPoseGL.position.x = -eyeFromHeadPoseGL.position.x;
+                eyeCam.transform.localPosition = eyeFromHeadPoseGL.position;
+                eyeCam.transform.localRotation = eyeFromHeadPoseGL.rotation;
+            }
         }
 
         // Update is called once per frame

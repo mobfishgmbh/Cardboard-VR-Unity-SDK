@@ -28,6 +28,14 @@ namespace MobfishCardboard
             CardboardHeadTracker.ResumeTracker();
 
             RefreshParameters();
+
+            CardboardQrCode.RegisterObserver();
+            Application.quitting += ApplicationQuit;
+        }
+
+        private static void ApplicationQuit()
+        {
+            CardboardQrCode.DeRegisterObserver();
         }
 
         public static void RefreshParameters()
