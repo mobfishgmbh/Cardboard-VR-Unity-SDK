@@ -163,5 +163,20 @@ namespace MobfishCardboard
             }
             return result;
         }
+
+        public static Matrix4x4 GetTransformTRSMatrix(Transform targetTransform)
+        {
+            return Matrix4x4.TRS(targetTransform.localPosition, targetTransform.localRotation,
+                targetTransform.localScale);
+        }
+
+        public static Pose GetPoseFromTRSMatrix(Matrix4x4 transformMatrix)
+        {
+            return new Pose()
+            {
+                position = transformMatrix.GetColumn(3),
+                rotation = Quaternion.LookRotation(transformMatrix.GetColumn(2), transformMatrix.GetColumn(1))
+            };
+        }
     }
 }

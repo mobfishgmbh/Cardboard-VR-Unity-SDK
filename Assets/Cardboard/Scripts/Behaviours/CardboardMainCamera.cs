@@ -34,13 +34,11 @@ namespace MobfishCardboard
         void Start()
         {
             RefreshCamera();
-            CardboardQrCode.RegisterObserver();
             CardboardManager.deviceParamsChangeEvent += RefreshCamera;
         }
 
         private void OnDestroy()
         {
-            CardboardQrCode.DeRegisterObserver();
             CardboardManager.deviceParamsChangeEvent -= RefreshCamera;
 
         }
@@ -50,11 +48,12 @@ namespace MobfishCardboard
             eyeRenderTextureDesc = new RenderTextureDescriptor()
             {
                 dimension = TextureDimension.Tex2D,
-                width = Screen.width,
+                width = Screen.width / 2,
                 height = Screen.height,
                 depthBufferBits = 16,
                 volumeDepth = 1,
-                msaaSamples = 2,
+                msaaSamples = 1,
+                vrUsage = VRTextureUsage.OneEye
             };
 
             RenderTexture newLeft = new RenderTexture(eyeRenderTextureDesc);
@@ -72,10 +71,34 @@ namespace MobfishCardboard
                 return;
             }
 
-            if (!CardboardManager.projectionMatrixLeft.Equals(Matrix4x4.zero))
-                leftCam.projectionMatrix = CardboardManager.projectionMatrixLeft;
-            if (!CardboardManager.projectionMatrixRight.Equals(Matrix4x4.zero))
-                rightCam.projectionMatrix = CardboardManager.projectionMatrixRight;
+            RefreshCamera_Eye(leftCam,
+                CardboardManager.projectionMatrixLeft, CardboardManager.eyeFromHeadMatrixLeft);
+            RefreshCamera_Eye(rightCam,
+                CardboardManager.projectionMatrixRight, CardboardManager.eyeFromHeadMatrixRight);
+
+
+            // if (CardboardManager.deviceParameter != null)
+            // {
+            //     leftCam.transform.localPosition =
+            //         new Vector3(-CardboardManager.deviceParameter.InterLensDistance / 2, 0, 0);
+            //     rightCam.transform.localPosition =
+            //         new Vector3(CardboardManager.deviceParameter.InterLensDistance / 2, 0, 0);
+            // }
+        }
+
+        private static void RefreshCamera_Eye(Camera eyeCam, Matrix4x4 projectionMat, Matrix4x4 eyeFromHeadMat)
+        {
+            if (!projectionMat.Equals(Matrix4x4.zero))
+                eyeCam.projectionMatrix = projectionMat;
+
+            //https://github.com/googlevr/cardboard/blob/master/sdk/lens_distortion.cc
+            if (!eyeFromHeadMat.Equals(Matrix4x4.zero))
+            {
+                Pose eyeFromHeadPoseGL = CardboardUtility.GetPoseFromTRSMatrix(eyeFromHeadMat);
+                eyeFromHeadPoseGL.position.x = -eyeFromHeadPoseGL.position.x;
+                eyeCam.transform.localPosition = eyeFromHeadPoseGL.position;
+                eyeCam.transform.localRotation = eyeFromHeadPoseGL.rotation;
+            }
         }
 
         // Update is called once per frame

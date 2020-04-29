@@ -32,7 +32,6 @@ namespace MobfishCardboard
         [DllImport(CardboardUtility.DLLName)]
         private static extern void CardboardLensDistortion_destroy(IntPtr lens_Distortion);
 
-        //todo is this correct?
         [DllImport(CardboardUtility.DLLName, CallingConvention = CallingConvention.Cdecl)]
         private static extern void CardboardLensDistortion_getDistortionMesh(
             IntPtr lens_Distortion, CardboardEye eye, ref CardboardMesh mesh);
