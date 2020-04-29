@@ -59,6 +59,11 @@ namespace MobfishCardboard
         {
             enableVRView = shouldEnable;
             enableVRViewChangedEvent?.Invoke();
+
+            if (!profileAvailable && enableVRView)
+            {
+                CardboardQrCode.StartScanQrCode();
+            }
         }
 
         private static void InitDeviceProfile()
@@ -68,7 +73,8 @@ namespace MobfishCardboard
             if (par.Item2 == 0 && !Application.isEditor)
             {
                 profileAvailable = false;
-                CardboardQrCode.StartScanQrCode();
+                if (enableVRView)
+                    CardboardQrCode.StartScanQrCode();
                 return;
             }
 

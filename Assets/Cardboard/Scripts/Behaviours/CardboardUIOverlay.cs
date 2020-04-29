@@ -11,7 +11,6 @@ namespace MobfishCardboard
         public Button scanQRButton;
         public Button switchVRButton;
         public Text profileParamText;
-        public Button refreshButton;
         public Button continueButton;
         public GameObject continuePanel;
 
@@ -22,14 +21,13 @@ namespace MobfishCardboard
             SetEnableQROverlay(false);
             continueButton.onClick.AddListener(ContinueClicked);
             scanQRButton.onClick.AddListener(ScanQRCode);
-            refreshButton.onClick.AddListener(RefreshClicked);
             switchVRButton.onClick.AddListener(SwitchVRView);
         }
 
         // Start is called before the first frame update
         void Start()
         {
-            if (!CardboardManager.profileAvailable)
+            if (CardboardManager.enableVRView && !CardboardManager.profileAvailable)
             {
                 SetEnableQROverlay(true);
             }
@@ -40,6 +38,7 @@ namespace MobfishCardboard
         {
             CardboardManager.deviceParamsChangeEvent -= TriggerRefresh;
         }
+
         private void ScanQRCode()
         {
             CardboardQrCode.StartScanQrCode();
@@ -49,6 +48,14 @@ namespace MobfishCardboard
         private void SwitchVRView()
         {
             CardboardManager.SetVRViewEnable(!CardboardManager.enableVRView);
+
+            SetEnableQROverlay(false);
+            scanQRButton.gameObject.SetActive(CardboardManager.enableVRView);
+
+            if (!CardboardManager.profileAvailable)
+            {
+                SetEnableQROverlay(true);
+            }
         }
 
         private void SetEnableQROverlay(bool shouldEnable)
@@ -62,11 +69,6 @@ namespace MobfishCardboard
             TriggerRefresh();
 
             SetEnableQROverlay(false);
-        }
-
-        private void RefreshClicked()
-        {
-            TriggerRefresh();
         }
 
         private void TriggerRefresh()
