@@ -9,6 +9,7 @@ namespace MobfishCardboard
     public class CardboardUIOverlay: MonoBehaviour
     {
         public Button scanQRButton;
+        public Button switchVRButton;
         public Text profileParamText;
         public Button refreshButton;
         public Button continueButton;
@@ -22,6 +23,7 @@ namespace MobfishCardboard
             continueButton.onClick.AddListener(ContinueClicked);
             scanQRButton.onClick.AddListener(ScanQRCode);
             refreshButton.onClick.AddListener(RefreshClicked);
+            switchVRButton.onClick.AddListener(SwitchVRView);
         }
 
         // Start is called before the first frame update
@@ -42,6 +44,11 @@ namespace MobfishCardboard
         {
             CardboardQrCode.StartScanQrCode();
             SetEnableQROverlay(true);
+        }
+
+        private void SwitchVRView()
+        {
+            CardboardManager.SetVRViewEnable(!CardboardManager.enableVRView);
         }
 
         private void SetEnableQROverlay(bool shouldEnable)

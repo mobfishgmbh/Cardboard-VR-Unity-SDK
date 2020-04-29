@@ -11,9 +11,23 @@ namespace MobfishCardboard
     public class CardboardMainCamera: MonoBehaviour
     {
         [Header("Cameras")]
-        public Camera novrCam;
-        public Camera leftCam;
-        public Camera rightCam;
+        [SerializeField]
+        private Camera novrCam;
+        [SerializeField]
+        private Camera leftCam;
+        [SerializeField]
+        private Camera rightCam;
+        [SerializeField]
+        private GameObject vrCamGroup;
+        [SerializeField]
+        private GameObject novrCamGroup;
+
+        [Header("Options")]
+        [SerializeField]
+        private bool defaultEnableVRView;
+        [Tooltip("Set this game object DontDestroyOnLoad. If it's not needed or any parent GameObject already have DontDestroyOnLoad, disable it")]
+        [SerializeField]
+        private bool dontDestroyOnLoad;
 
         private RenderTextureDescriptor eyeRenderTextureDesc;
         private bool overlayIsOpen;
@@ -25,9 +39,15 @@ namespace MobfishCardboard
 
             #endif
 
+            if (dontDestroyOnLoad)
+            {
+                DontDestroyOnLoad(gameObject);
+            }
+
             SetupRenderTexture();
 
             CardboardManager.InitCardboard();
+            CardboardManager.SetVRViewEnable(defaultEnableVRView);
         }
 
         // Start is called before the first frame update
@@ -35,12 +55,14 @@ namespace MobfishCardboard
         {
             RefreshCamera();
             CardboardManager.deviceParamsChangeEvent += RefreshCamera;
+            SwitchVRCamera();
+            CardboardManager.enableVRViewChangedEvent += SwitchVRCamera;
         }
 
         private void OnDestroy()
         {
             CardboardManager.deviceParamsChangeEvent -= RefreshCamera;
-
+            CardboardManager.enableVRViewChangedEvent -= SwitchVRCamera;
         }
 
         private void SetupRenderTexture()
@@ -62,6 +84,12 @@ namespace MobfishCardboard
             rightCam.targetTexture = newRight;
 
             CardboardManager.SetRenderTexture(newLeft, newRight);
+        }
+
+        private void SwitchVRCamera()
+        {
+            vrCamGroup.SetActive(CardboardManager.enableVRView);
+            novrCamGroup.SetActive(!CardboardManager.enableVRView);
         }
 
         private void RefreshCamera()

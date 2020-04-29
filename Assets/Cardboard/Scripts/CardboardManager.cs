@@ -5,6 +5,8 @@ namespace MobfishCardboard
 {
     public static class CardboardManager
     {
+        private static bool initiated;
+
         public static DeviceParams deviceParameter { get; private set; }
         public static RenderTexture viewTextureLeft { get; private set; }
         public static RenderTexture viewTextureRight { get; private set; }
@@ -18,19 +20,25 @@ namespace MobfishCardboard
         public static Matrix4x4 eyeFromHeadMatrixRight { get; private set; }
 
         public static bool profileAvailable { get; private set; }
+        public static bool enableVRView { get; private set; }
 
         public static event Action deviceParamsChangeEvent;
         public static event Action renderTextureResetEvent;
+        public static event Action enableVRViewChangedEvent;
 
         public static void InitCardboard()
         {
-            CardboardHeadTracker.CreateTracker();
-            CardboardHeadTracker.ResumeTracker();
+            if (!initiated)
+            {
+                CardboardHeadTracker.CreateTracker();
+                CardboardHeadTracker.ResumeTracker();
 
+                CardboardQrCode.RegisterObserver();
+                Application.quitting += ApplicationQuit;
+
+                initiated = true;
+            }
             RefreshParameters();
-
-            CardboardQrCode.RegisterObserver();
-            Application.quitting += ApplicationQuit;
         }
 
         private static void ApplicationQuit()
@@ -45,6 +53,12 @@ namespace MobfishCardboard
             InitCameraProperties();
 
             deviceParamsChangeEvent?.Invoke();
+        }
+
+        public static void SetVRViewEnable(bool shouldEnable)
+        {
+            enableVRView = shouldEnable;
+            enableVRViewChangedEvent?.Invoke();
         }
 
         private static void InitDeviceProfile()
