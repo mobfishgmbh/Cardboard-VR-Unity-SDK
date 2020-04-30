@@ -27,10 +27,8 @@ namespace MobfishCardboard
         // Start is called before the first frame update
         void Start()
         {
-            if (CardboardManager.enableVRView && !CardboardManager.profileAvailable)
-            {
-                SetEnableQROverlay(true);
-            }
+            TriggerRefresh();
+            scanQRButton.gameObject.SetActive(CardboardManager.enableVRView);
             CardboardManager.deviceParamsChangeEvent += TriggerRefresh;
         }
 
@@ -52,10 +50,7 @@ namespace MobfishCardboard
             SetEnableQROverlay(false);
             scanQRButton.gameObject.SetActive(CardboardManager.enableVRView);
 
-            if (!CardboardManager.profileAvailable)
-            {
-                SetEnableQROverlay(true);
-            }
+            TriggerRefresh();
         }
 
         private void SetEnableQROverlay(bool shouldEnable)
@@ -75,7 +70,7 @@ namespace MobfishCardboard
         {
             //CardboardManager.RefreshParameters();
 
-            if (!CardboardManager.profileAvailable)
+            if (CardboardManager.enableVRView && !CardboardManager.profileAvailable)
             {
                 SetEnableQROverlay(true);
             }
@@ -83,7 +78,7 @@ namespace MobfishCardboard
             if (CardboardManager.deviceParameter != null)
             {
                 profileParamText.text =
-                    CardboardManager.deviceParameter.Model + " " + CardboardManager.deviceParameter.Vendor;
+                    CardboardManager.deviceParameter.Vendor + " " + CardboardManager.deviceParameter.Model;
             }
         }
     }
