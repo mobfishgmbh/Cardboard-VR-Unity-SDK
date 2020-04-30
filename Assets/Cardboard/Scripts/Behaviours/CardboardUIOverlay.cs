@@ -9,8 +9,8 @@ namespace MobfishCardboard
     public class CardboardUIOverlay: MonoBehaviour
     {
         public Button scanQRButton;
+        public Button switchVRButton;
         public Text profileParamText;
-        public Button refreshButton;
         public Button continueButton;
         public GameObject continuePanel;
 
@@ -21,16 +21,14 @@ namespace MobfishCardboard
             SetEnableQROverlay(false);
             continueButton.onClick.AddListener(ContinueClicked);
             scanQRButton.onClick.AddListener(ScanQRCode);
-            refreshButton.onClick.AddListener(RefreshClicked);
+            switchVRButton.onClick.AddListener(SwitchVRView);
         }
 
         // Start is called before the first frame update
         void Start()
         {
-            if (!CardboardManager.profileAvailable)
-            {
-                SetEnableQROverlay(true);
-            }
+            TriggerRefresh();
+            scanQRButton.gameObject.SetActive(CardboardManager.enableVRView);
             CardboardManager.deviceParamsChangeEvent += TriggerRefresh;
         }
 
@@ -38,10 +36,21 @@ namespace MobfishCardboard
         {
             CardboardManager.deviceParamsChangeEvent -= TriggerRefresh;
         }
+
         private void ScanQRCode()
         {
             CardboardQrCode.StartScanQrCode();
             SetEnableQROverlay(true);
+        }
+
+        private void SwitchVRView()
+        {
+            CardboardManager.SetVRViewEnable(!CardboardManager.enableVRView);
+
+            SetEnableQROverlay(false);
+            scanQRButton.gameObject.SetActive(CardboardManager.enableVRView);
+
+            TriggerRefresh();
         }
 
         private void SetEnableQROverlay(bool shouldEnable)
@@ -57,16 +66,11 @@ namespace MobfishCardboard
             SetEnableQROverlay(false);
         }
 
-        private void RefreshClicked()
-        {
-            TriggerRefresh();
-        }
-
         private void TriggerRefresh()
         {
             //CardboardManager.RefreshParameters();
 
-            if (!CardboardManager.profileAvailable)
+            if (CardboardManager.enableVRView && !CardboardManager.profileAvailable)
             {
                 SetEnableQROverlay(true);
             }
@@ -74,7 +78,7 @@ namespace MobfishCardboard
             if (CardboardManager.deviceParameter != null)
             {
                 profileParamText.text =
-                    CardboardManager.deviceParameter.Model + " " + CardboardManager.deviceParameter.Vendor;
+                    CardboardManager.deviceParameter.Vendor + " " + CardboardManager.deviceParameter.Model;
             }
         }
     }
