@@ -1,13 +1,17 @@
 #import "CustomLibrary.h"
 
 extern "C" {
-QRScannedCallback savedCallback;
-
     void registerObserver(QRScannedCallback _callback) {
-        savedCallback = _callback;
         [NotificationObserver RegisterQRCallback:_callback];
     }
     void deRegisterObserver(){
         [NotificationObserver DeRegisterQRCallback];
     }
+
+void loadDeviceParamertersFromURL(const char* url, QRScannedCallback _callback){
+   [CardboardDeviceParamsHelper resolveAndUpdateViewerProfileFromURL:[NSURL URLWithString:[NSString stringWithUTF8String:url]] withCompletion:^(BOOL success, NSError *error) {
+         _callback(success);
+   }];
+}
+
 }

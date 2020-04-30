@@ -29,7 +29,7 @@ namespace MobfishCardboard
         {
             if (!CardboardManager.profileAvailable)
             {
-                SetEnableQROverlay(true);
+                //SetEnableQROverlay(true);
             }
             CardboardManager.deviceParamsChangeEvent += TriggerRefresh;
         }

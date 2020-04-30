@@ -26,10 +26,10 @@ namespace MobfishCardboard
         {
             CardboardHeadTracker.CreateTracker();
             CardboardHeadTracker.ResumeTracker();
+            CardboardQrCode.RegisterObserver();
 
             RefreshParameters();
 
-            CardboardQrCode.RegisterObserver();
             Application.quitting += ApplicationQuit;
         }
 
@@ -54,7 +54,8 @@ namespace MobfishCardboard
             if (par.Item2 == 0 && !Application.isEditor)
             {
                 profileAvailable = false;
-                CardboardQrCode.StartScanQrCode();
+                //CardboardQrCode.LoadDefaultDeviceParamerters();
+                //CardboardQrCode.StartScanQrCode();
                 return;
             }
 
