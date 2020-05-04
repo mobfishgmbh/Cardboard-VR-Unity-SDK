@@ -58,9 +58,9 @@ namespace MobfishCardboard
         }
 
         [AOT.MonoPInvokeCallback(typeof(QRCodeScannedCallbackType))]
-        private static void LoadDefaultDeviceParam(bool success)
+        private static void LoadDeviceParamCallback(bool success)
         {
-            Debug.Log("LoadDefaultDeviceParam called in Unity!!: " + success);
+            Debug.Log("LoadDeviceParamCallback called in Unity!!: " + success);
             CardboardManager.RefreshParameters();
         }
 
@@ -76,9 +76,9 @@ namespace MobfishCardboard
             #endif
         }
 
-        public static void LoadDeviceParamertersFromURL(string url) {
+        public static void SetCardboardProfile(string url) {
             #if NATIVE_PLUGIN_EXIST && UNITY_IOS
-            loadDeviceParamertersFromURL (url, LoadDefaultDeviceParam);
+            loadDeviceParamertersFromURL (url, LoadDeviceParamCallback);
             #endif
         }
 

@@ -56,19 +56,16 @@ namespace MobfishCardboard
             CardboardManager.deviceParamsChangeEvent += RefreshCamera;
             SwitchVRCamera();
             CardboardManager.enableVRViewChangedEvent += SwitchVRCamera;
-            Invoke("LoadDefaultProfile", 1f);
+            // Invoke("LoadDefaultProfile", 1f);
         }
 
-        void LoadDefaultProfile()
-        {
-            if (CardboardManager.profileAvailable)
-                return;
-
-            string defaultDeviceParameterURL = "https://arvr.google.com/cardboard/download/?p=Cgxtb2JmaXNoIEdtYkgSElZJU0lUIFBMQVlFUjM2MC5ERR2ZuxY9JbbzfT0qEAAASEIAAEhCAABIQgAASEJYADUpXA89OgiCc4Y-MCqJPlAAYAA";
-
-            //This function can also be used to change current device paramters
-            CardboardQrCode.LoadDeviceParamertersFromURL(defaultDeviceParameterURL);
-        }
+        // void LoadDefaultProfile()
+        // {
+        //     if (CardboardManager.profileAvailable)
+        //         return;
+        //     //This function can also be used to change current device paramters
+        //     CardboardQrCode.SetCardboardProfile(CardboardUtility.defaultCardboardUrl);
+        // }
 
         private void OnDestroy()
         {

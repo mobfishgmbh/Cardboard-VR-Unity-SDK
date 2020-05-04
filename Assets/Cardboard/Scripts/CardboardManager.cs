@@ -45,6 +45,20 @@ namespace MobfishCardboard
             CardboardQrCode.DeRegisterObserver();
         }
 
+        private static void LoadDefaultProfile()
+        {
+            if (profileAvailable)
+                return;
+
+            SetCardboardProfile(CardboardUtility.defaultCardboardUrl);
+        }
+
+        //This function can be used to change current device paramters
+        public static void SetCardboardProfile(string url)
+        {
+            CardboardQrCode.SetCardboardProfile(url);
+        }
+
         public static void RefreshParameters()
         {
             CardboardQrCode.RetrieveDeviceParam();
@@ -59,10 +73,10 @@ namespace MobfishCardboard
             enableVRView = shouldEnable;
             enableVRViewChangedEvent?.Invoke();
 
-            if (!profileAvailable && enableVRView)
-            {
-                CardboardQrCode.StartScanQrCode();
-            }
+            // if (!profileAvailable && enableVRView)
+            // {
+            //     CardboardQrCode.StartScanQrCode();
+            // }
         }
 
         private static void InitDeviceProfile()
@@ -71,10 +85,9 @@ namespace MobfishCardboard
 
             if (par.Item2 == 0 && !Application.isEditor)
             {
-                profileAvailable = false;
-                if (enableVRView)
-                    CardboardQrCode.StartScanQrCode();
-                return;
+                // profileAvailable = false;
+                LoadDefaultProfile();
+                // return;
             }
 
             //CardboardLensDistortion.DestroyLensDistortion();
