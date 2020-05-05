@@ -27,6 +27,7 @@ namespace MobfishCardboard
         // Start is called before the first frame update
         void Start()
         {
+
             TriggerRefresh();
             scanQRButton.gameObject.SetActive(CardboardManager.enableVRView);
             CardboardManager.deviceParamsChangeEvent += TriggerRefresh;

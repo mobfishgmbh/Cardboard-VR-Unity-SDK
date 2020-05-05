@@ -10,6 +10,9 @@ namespace MobfishCardboard
         public const string DLLName = "__Internal";
         public const int kResolution = 40;
 
+        //https://github.com/googlevr/cardboard/blob/master/sdk/qrcode/ios/device_params_helper.mm
+        public const string defaultCardboardUrl = "http://g.co/cardboard";
+
         public static CardboardMesh CreateMockupCardboardMesh(CardboardEye eye)
         {
             CardboardMesh result;

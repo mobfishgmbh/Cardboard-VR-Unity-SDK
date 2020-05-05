@@ -56,7 +56,16 @@ namespace MobfishCardboard
             CardboardManager.deviceParamsChangeEvent += RefreshCamera;
             SwitchVRCamera();
             CardboardManager.enableVRViewChangedEvent += SwitchVRCamera;
+            // Invoke("LoadDefaultProfile", 1f);
         }
+
+        // void LoadDefaultProfile()
+        // {
+        //     if (CardboardManager.profileAvailable)
+        //         return;
+        //     //This function can also be used to change current device paramters
+        //     CardboardQrCode.SetCardboardProfile(CardboardUtility.defaultCardboardUrl);
+        // }
 
         private void OnDestroy()
         {

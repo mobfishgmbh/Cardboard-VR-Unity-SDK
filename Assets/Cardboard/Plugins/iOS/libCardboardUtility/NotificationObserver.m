@@ -26,7 +26,7 @@ static QRScannedCallback qrScannedCallback;
 +(void) QRObserver: (NSNotification *) name{
     NSLog(@"QRCodeScanned Received!!");
     if(NotificationObserver.qrScannedCallback != nil){
-        NotificationObserver.qrScannedCallback();
+        NotificationObserver.qrScannedCallback(YES);
     }
 }
 @end

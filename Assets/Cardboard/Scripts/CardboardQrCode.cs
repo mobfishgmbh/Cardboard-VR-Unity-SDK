@@ -15,7 +15,7 @@ namespace MobfishCardboard
         private static byte[] encodedBytes;
         private static DeviceParams decodedParams;
 
-        private delegate void QRCodeScannedCallbackType();
+        private delegate void QRCodeScannedCallbackType(bool success);
 
         #if NATIVE_PLUGIN_EXIST
         [DllImport(CardboardUtility.DLLName)]
@@ -32,6 +32,8 @@ namespace MobfishCardboard
         private static extern void registerObserver(QRCodeScannedCallbackType _callback);
         [DllImport(CardboardUtility.DLLName)]
         private static extern void deRegisterObserver();
+        [DllImport(CardboardUtility.DLLName)]
+        private static extern void loadDeviceParamertersFromURL (string url, QRCodeScannedCallbackType _callback);
 
         #endif
 
@@ -49,9 +51,16 @@ namespace MobfishCardboard
         #endif
 
         [AOT.MonoPInvokeCallback(typeof(QRCodeScannedCallbackType))]
-        private static void QRCodeScannedCallback()
+        private static void QRCodeScannedCallback(bool success)
         {
             Debug.Log("QRCodeScannedCallback received in Unity!!");
+            CardboardManager.RefreshParameters();
+        }
+
+        [AOT.MonoPInvokeCallback(typeof(QRCodeScannedCallbackType))]
+        private static void LoadDeviceParamCallback(bool success)
+        {
+            Debug.Log("LoadDeviceParamCallback called in Unity!!: " + success);
             CardboardManager.RefreshParameters();
         }
 
@@ -64,6 +73,12 @@ namespace MobfishCardboard
         {
             #if NATIVE_PLUGIN_EXIST && UNITY_IOS
             registerObserver(QRCodeScannedCallback);
+            #endif
+        }
+
+        public static void SetCardboardProfile(string url) {
+            #if NATIVE_PLUGIN_EXIST && UNITY_IOS
+            loadDeviceParamertersFromURL (url, LoadDeviceParamCallback);
             #endif
         }
 
