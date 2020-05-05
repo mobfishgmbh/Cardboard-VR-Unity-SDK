@@ -6,6 +6,7 @@ namespace MobfishCardboard
     public static class CardboardManager
     {
         private static bool initiated;
+        private static bool retriving;
 
         public static DeviceParams deviceParameter { get; private set; }
         public static RenderTexture viewTextureLeft { get; private set; }
@@ -62,8 +63,16 @@ namespace MobfishCardboard
         public static void RefreshParameters()
         {
             CardboardQrCode.RetrieveDeviceParam();
+
+            if (retriving)
+                return;
+
+            retriving = true;
+
             InitDeviceProfile();
             InitCameraProperties();
+
+            retriving = false;
 
             deviceParamsChangeEvent?.Invoke();
         }
@@ -72,11 +81,6 @@ namespace MobfishCardboard
         {
             enableVRView = shouldEnable;
             enableVRViewChangedEvent?.Invoke();
-
-            // if (!profileAvailable && enableVRView)
-            // {
-            //     CardboardQrCode.StartScanQrCode();
-            // }
         }
 
         private static void InitDeviceProfile()
@@ -85,12 +89,11 @@ namespace MobfishCardboard
 
             if (par.Item2 == 0 && !Application.isEditor)
             {
-                // profileAvailable = false;
+                profileAvailable = false;
                 LoadDefaultProfile();
-                // return;
+                par = CardboardQrCode.GetDeviceParamsPointer();
             }
 
-            //CardboardLensDistortion.DestroyLensDistortion();
             deviceParameter = CardboardQrCode.GetDecodedDeviceParams();
             CardboardLensDistortion.CreateLensDistortion(par.Item1, par.Item2);
             profileAvailable = true;
