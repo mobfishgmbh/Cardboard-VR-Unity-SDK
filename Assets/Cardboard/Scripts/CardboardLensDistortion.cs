@@ -103,9 +103,11 @@ namespace MobfishCardboard
             CardboardLensDistortion_getDistortionMesh(_lensDistortion, CardboardEye.kLeft, ref leftEyeMesh);
             CardboardLensDistortion_getDistortionMesh(_lensDistortion, CardboardEye.kRight, ref rightEyeMesh);
 
-            Debug.Log("Feature Test CardboardLensDistortion.GetDistortionMesh() result leftEye n_indics=" +
-                leftEyeMesh.n_indices + " n_vertices=" + leftEyeMesh.n_vertices +
-                " actual indics=" + leftEyeMesh.indices.Length + " actual vertices=" + rightEyeMesh.vertices.Length);
+            Debug.LogFormat(
+                "CardboardLensDistortion.RetrieveEyeMeshes() result leftEye n_indics={0} n_vertices={1} " +
+                "actual indics={2} actual vertices={3}",
+                leftEyeMesh.n_indices, leftEyeMesh.n_vertices,
+                leftEyeMesh.indices.Length, rightEyeMesh.vertices.Length);
         }
 
         public static (CardboardMesh, CardboardMesh) GetEyeMeshes()

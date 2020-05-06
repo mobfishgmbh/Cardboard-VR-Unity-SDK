@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Demo/DemoScene.unity
+    path: Assets/Demo/SceneDemo.unity
     guid: e77ae6e9692e5494987fc697ef66dc01
+  - enabled: 1
+    path: Assets/Demo/SceneCardboardRoom.unity
+    guid: a31348365efda444c9566a7a112cb3b3
   m_configObjects: {}

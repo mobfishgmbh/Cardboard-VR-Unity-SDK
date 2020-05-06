@@ -843,3 +843,4 @@ MonoBehaviour:
   profileParamText: {fileID: 6631391486771615343}
   continueButton: {fileID: 6631391486040861775}
   continuePanel: {fileID: 6631391486461831208}
+  dontDestroyAndSingleton: 1

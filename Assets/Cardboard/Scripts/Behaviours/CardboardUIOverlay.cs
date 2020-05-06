@@ -8,16 +8,37 @@ namespace MobfishCardboard
 {
     public class CardboardUIOverlay: MonoBehaviour
     {
+        //Only used in dontDestroyAndSingleton
+        private static CardboardUIOverlay instance;
+
         public Button scanQRButton;
         public Button switchVRButton;
         public Text profileParamText;
         public Button continueButton;
         public GameObject continuePanel;
 
+        [Header("Options")]
+        [SerializeField]
+        private bool dontDestroyAndSingleton;
+
         private bool overlayIsOpen;
 
         private void Awake()
         {
+            if (dontDestroyAndSingleton)
+            {
+                if (instance == null)
+                {
+                    DontDestroyOnLoad(gameObject);
+                    instance = this;
+                }
+                else if (instance != this)
+                {
+                    Destroy(gameObject);
+                    return;
+                }
+            }
+
             SetEnableQROverlay(false);
             continueButton.onClick.AddListener(ContinueClicked);
             scanQRButton.onClick.AddListener(ScanQRCode);
