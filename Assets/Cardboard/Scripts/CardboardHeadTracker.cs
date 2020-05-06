@@ -39,7 +39,7 @@ namespace MobfishCardboard
 
         [DllImport(CardboardUtility.DLLName)]
         private static extern void CardboardHeadTracker_getPose(
-            IntPtr head_tracker, double timestamp_ns, float[] position, float[] orientation);
+            IntPtr head_tracker, long timestamp_ns, float[] position, float[] orientation);
 
         [DllImport(CardboardUtility.DLLName)]
         private static extern void CardboardHeadTracker_pause(IntPtr head_tracker);
@@ -64,7 +64,7 @@ namespace MobfishCardboard
         }
 
         private static void CardboardHeadTracker_getPose(
-            IntPtr head_tracker, double timestamp_ns, float[] position, float[] orientation)
+            IntPtr head_tracker, long timestamp_ns, float[] position, float[] orientation)
         {
             position.Initialize();
             editorOrientation.CopyTo(orientation, 0);
@@ -92,8 +92,11 @@ namespace MobfishCardboard
 
         public static void UpdatePose()
         {
-            // UpdatePoseCardboard();
+            #if NATIVE_PLUGIN_EXIST
+            UpdatePoseCardboard();
+            #else
             UpdatePoseGyro();
+            #endif
         }
 
         private static void UpdatePoseCardboard()
@@ -104,7 +107,7 @@ namespace MobfishCardboard
             float[] _position = new float[3];
             float[] _orientation = new float[4];
 
-            CardboardHeadTracker_getPose(_headTracker, time, _position, _orientation);
+            CardboardHeadTracker_getPose(_headTracker, Convert.ToInt64(time), _position, _orientation);
 
             //Need help, reading from _orientation is not normal.
             trackerRawPosition = new Vector3(_position[0], _position[1], _position[2]);
@@ -114,7 +117,7 @@ namespace MobfishCardboard
             Matrix4x4 unityPoseMat = flipZ * deviceRawPoseMat * flipZ;
 
             trackerUnityPosition = unityPoseMat.GetColumn(3);
-            trackerUnityRotation = Quaternion.LookRotation(unityPoseMat.GetColumn(2), unityPoseMat.GetColumn(1));
+            trackerUnityRotation = new Quaternion(trackerRawRotation.x, trackerRawRotation.y, -trackerRawRotation.z, trackerRawRotation.w);            
         }
 
         private static void UpdatePoseGyro()
