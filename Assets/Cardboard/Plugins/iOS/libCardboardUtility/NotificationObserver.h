@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
-typedef void (*QRScannedCallback)(void);
+typedef void (*QRScannedCallback)(bool);
 
 @interface NotificationObserver : NSObject
 

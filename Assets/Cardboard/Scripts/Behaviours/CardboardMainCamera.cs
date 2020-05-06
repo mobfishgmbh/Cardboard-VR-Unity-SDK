@@ -9,6 +9,9 @@ namespace MobfishCardboard
 {
     public class CardboardMainCamera: MonoBehaviour
     {
+        //Only used in dontDestroyAndSingleton
+        private static CardboardMainCamera instance;
+
         [Header("Cameras")]
         [SerializeField]
         private Camera novrCam;
@@ -24,9 +27,9 @@ namespace MobfishCardboard
         [Header("Options")]
         [SerializeField]
         private bool defaultEnableVRView;
-        [Tooltip("Set this game object DontDestroyOnLoad. If it's not needed or any parent GameObject already have DontDestroyOnLoad, disable it")]
+        [Tooltip("Set this GameObject DontDestroyOnLoad and Singleton. If it's not needed or any parent GameObject already have DontDestroyOnLoad, disable it")]
         [SerializeField]
-        private bool dontDestroyOnLoad;
+        private bool dontDestroyAndSingleton;
 
         private RenderTextureDescriptor eyeRenderTextureDesc;
         private bool overlayIsOpen;
@@ -38,9 +41,18 @@ namespace MobfishCardboard
 
             #endif
 
-            if (dontDestroyOnLoad)
+            if (dontDestroyAndSingleton)
             {
-                DontDestroyOnLoad(gameObject);
+                if (instance == null)
+                {
+                    DontDestroyOnLoad(gameObject);
+                    instance = this;
+                }
+                else if (instance != this)
+                {
+                    Destroy(gameObject);
+                    return;
+                }
             }
 
             SetupRenderTexture();

@@ -6,6 +6,7 @@ namespace MobfishCardboard
     public static class CardboardManager
     {
         private static bool initiated;
+        private static bool retriving;
 
         public static DeviceParams deviceParameter { get; private set; }
         public static RenderTexture viewTextureLeft { get; private set; }
@@ -35,7 +36,6 @@ namespace MobfishCardboard
 
                 CardboardQrCode.RegisterObserver();
                 Application.quitting += ApplicationQuit;
-
                 initiated = true;
             }
             RefreshParameters();
@@ -46,11 +46,33 @@ namespace MobfishCardboard
             CardboardQrCode.DeRegisterObserver();
         }
 
+        private static void LoadDefaultProfile()
+        {
+            if (profileAvailable)
+                return;
+
+            SetCardboardProfile(CardboardUtility.defaultCardboardUrl);
+        }
+
+        //This function can be used to change current device paramters
+        public static void SetCardboardProfile(string url)
+        {
+            CardboardQrCode.SetCardboardProfile(url);
+        }
+
         public static void RefreshParameters()
         {
             CardboardQrCode.RetrieveDeviceParam();
+
+            if (retriving)
+                return;
+
+            retriving = true;
+
             InitDeviceProfile();
             InitCameraProperties();
+
+            retriving = false;
 
             deviceParamsChangeEvent?.Invoke();
         }
@@ -59,11 +81,6 @@ namespace MobfishCardboard
         {
             enableVRView = shouldEnable;
             enableVRViewChangedEvent?.Invoke();
-
-            if (!profileAvailable && enableVRView)
-            {
-                CardboardQrCode.StartScanQrCode();
-            }
         }
 
         private static void InitDeviceProfile()
@@ -73,12 +90,10 @@ namespace MobfishCardboard
             if (par.Item2 == 0 && !Application.isEditor)
             {
                 profileAvailable = false;
-                if (enableVRView)
-                    CardboardQrCode.StartScanQrCode();
-                return;
+                LoadDefaultProfile();
+                par = CardboardQrCode.GetDeviceParamsPointer();
             }
 
-            //CardboardLensDistortion.DestroyLensDistortion();
             deviceParameter = CardboardQrCode.GetDecodedDeviceParams();
             CardboardLensDistortion.CreateLensDistortion(par.Item1, par.Item2);
             profileAvailable = true;

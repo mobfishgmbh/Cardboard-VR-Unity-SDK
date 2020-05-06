@@ -15,7 +15,7 @@ namespace MobfishCardboard
         private static byte[] encodedBytes;
         private static DeviceParams decodedParams;
 
-        private delegate void QRCodeScannedCallbackType();
+        private delegate void QRCodeScannedCallbackType(bool success);
 
         #if NATIVE_PLUGIN_EXIST
         [DllImport(CardboardUtility.DLLName)]
@@ -32,6 +32,8 @@ namespace MobfishCardboard
         private static extern void registerObserver(QRCodeScannedCallbackType _callback);
         [DllImport(CardboardUtility.DLLName)]
         private static extern void deRegisterObserver();
+        [DllImport(CardboardUtility.DLLName)]
+        private static extern void loadDeviceParamertersFromURL (string url, QRCodeScannedCallbackType _callback);
 
         #endif
 
@@ -49,9 +51,16 @@ namespace MobfishCardboard
         #endif
 
         [AOT.MonoPInvokeCallback(typeof(QRCodeScannedCallbackType))]
-        private static void QRCodeScannedCallback()
+        private static void QRCodeScannedCallback(bool success)
         {
             Debug.Log("QRCodeScannedCallback received in Unity!!");
+            CardboardManager.RefreshParameters();
+        }
+
+        [AOT.MonoPInvokeCallback(typeof(QRCodeScannedCallbackType))]
+        private static void LoadDeviceParamCallback(bool success)
+        {
+            Debug.Log("LoadDeviceParamCallback called in Unity!!: " + success);
             CardboardManager.RefreshParameters();
         }
 
@@ -67,6 +76,12 @@ namespace MobfishCardboard
             #endif
         }
 
+        public static void SetCardboardProfile(string url) {
+            #if NATIVE_PLUGIN_EXIST && UNITY_IOS
+            loadDeviceParamertersFromURL (url, LoadDeviceParamCallback);
+            #endif
+        }
+
         public static void DeRegisterObserver()
         {
             #if NATIVE_PLUGIN_EXIST && UNITY_IOS
@@ -78,15 +93,15 @@ namespace MobfishCardboard
         {
             CardboardQrCode_getSavedDeviceParams(ref _encodedDeviceParams, ref _paramsSize);
 
-            Debug.Log("Feature Test RetrieveDeviceParam size=" + _paramsSize);
+            Debug.Log("CardboardQrCode.RetrieveDeviceParam() size=" + _paramsSize);
             encodedBytes = ReadByteArray(_encodedDeviceParams, _paramsSize);
 
             if (_paramsSize > 0)
                 decodedParams = DeviceParams.Parser.ParseFrom(encodedBytes);
 
-            Debug.LogFormat("Feature Test RetrieveDeviceParam params length={0}, byte=\r\n {1}",
-                encodedBytes.Length, string.Join(" , ", encodedBytes));
-            Debug.LogFormat("Feature Test decode device params: \r\n{0}",
+            // Debug.LogFormat("CardboardQrCode.RetrieveDeviceParam() params length={0}, byte=\r\n {1}",
+            //     encodedBytes.Length, string.Join(" , ", encodedBytes));
+            Debug.LogFormat("CardboardQrCode.RetrieveDeviceParam() decode device params: \r\n{0}",
                 CardboardUtility.DeviceParamsToString(decodedParams));
         }
 
@@ -94,11 +109,6 @@ namespace MobfishCardboard
         {
             return (_encodedDeviceParams, _paramsSize);
         }
-
-        // public static (byte[], int) GetDeviceParamsByte()
-        // {
-        //     return (encodedBytes, _paramsSize);
-        // }
 
         public static DeviceParams GetDecodedDeviceParams()
         {

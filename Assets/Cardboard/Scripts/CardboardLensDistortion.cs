@@ -70,7 +70,6 @@ namespace MobfishCardboard
             IntPtr lens_Distortion, float[] projection_matrix, float[] eye_from_head_matrix, CardboardEye eye)
         {
             CardboardUtility.Matrix4x4ToArray(Matrix4x4.Perspective(70, 0.8f, 0.5f, 1000)).CopyTo(projection_matrix, 0);
-            // projection_matrix.Initialize();
             eye_from_head_matrix.Initialize();
         }
 
@@ -99,34 +98,16 @@ namespace MobfishCardboard
             CardboardLensDistortion_destroy(_lensDistortion);
         }
 
-        // public static void GetDistortionMesh(CardboardEye eye)
-        // {
-        //     CardboardMesh result = new CardboardMesh();
-        //     CardboardLensDistortion_getDistortionMesh(_lensDistortion, eye, ref result);
-        //     Debug.Log("Feature Test CardboardLensDistortion.GetDistortionMesh() result n_indics=" +
-        //         result.n_indices + " n_vertices=" + result.n_vertices);
-        //     // return CardboardUtility.ConvertCardboardMesh(result);
-        // }
-
         public static void RetrieveEyeMeshes()
         {
-            //todo during scan qr, malloc error, something not freed here?
-            //CardboardMesh tempA = new CardboardMesh();
-            //GCHandle tempAGch = GCHandle.Alloc(tempA);
-            //CardboardMesh tempB = new CardboardMesh();
-            //GCHandle tempBGch = GCHandle.Alloc(tempB);
-            //leftEyeMesh = GCHandle.ToIntPtr(tempAGch);
-            //rightEyeMesh = GCHandle.ToIntPtr(tempBGch);
-
             CardboardLensDistortion_getDistortionMesh(_lensDistortion, CardboardEye.kLeft, ref leftEyeMesh);
             CardboardLensDistortion_getDistortionMesh(_lensDistortion, CardboardEye.kRight, ref rightEyeMesh);
 
-            //tempAGch.Free();
-            //tempBGch.Free();
-
-            Debug.Log("Feature Test CardboardLensDistortion.GetDistortionMesh() result leftEye n_indics=" +
-                leftEyeMesh.n_indices + " n_vertices=" + leftEyeMesh.n_vertices +
-                " actual indics=" + leftEyeMesh.indices.Length + " actual vertices=" + rightEyeMesh.vertices.Length);
+            Debug.LogFormat(
+                "CardboardLensDistortion.RetrieveEyeMeshes() result leftEye n_indics={0} n_vertices={1} " +
+                "actual indics={2} actual vertices={3}",
+                leftEyeMesh.n_indices, leftEyeMesh.n_vertices,
+                leftEyeMesh.indices.Length, rightEyeMesh.vertices.Length);
         }
 
         public static (CardboardMesh, CardboardMesh) GetEyeMeshes()
