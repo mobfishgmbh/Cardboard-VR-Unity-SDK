@@ -61,7 +61,7 @@ namespace MobfishCardboard
 
         private void ScanQRCode()
         {
-            CardboardQrCode.StartScanQrCode();
+            CardboardManager.ScanQrCode();
             SetEnableQROverlay(true);
         }
 

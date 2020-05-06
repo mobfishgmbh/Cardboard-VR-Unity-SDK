@@ -29,6 +29,7 @@ namespace MobfishCardboard
         void Update()
         {
             CardboardHeadTracker.UpdatePose();
+            targetTransform.localPosition = CardboardHeadTracker.trackerUnityPosition;
             targetTransform.localRotation = CardboardHeadTracker.trackerUnityRotation;
         }
     }

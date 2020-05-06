@@ -7,6 +7,7 @@ namespace MobfishCardboard
     {
         private static bool initiated;
         private static bool retriving;
+        private static Pose headPoseTemp;
 
         public static DeviceParams deviceParameter { get; private set; }
         public static RenderTexture viewTextureLeft { get; private set; }
@@ -60,6 +61,11 @@ namespace MobfishCardboard
             CardboardQrCode.SetCardboardProfile(url);
         }
 
+        public static void ScanQrCode()
+        {
+            CardboardQrCode.StartScanQrCode();
+        }
+
         public static void RefreshParameters()
         {
             CardboardQrCode.RetrieveDeviceParam();
@@ -83,6 +89,19 @@ namespace MobfishCardboard
             enableVRViewChangedEvent?.Invoke();
         }
 
+        public static Pose GetHeadPose(bool withUpdate = false)
+        {
+            if (withUpdate)
+            {
+                CardboardHeadTracker.UpdatePose();
+            }
+
+            headPoseTemp.position = CardboardHeadTracker.trackerUnityPosition;
+            headPoseTemp.rotation = CardboardHeadTracker.trackerUnityRotation;
+
+            return headPoseTemp;
+        }
+
         private static void InitDeviceProfile()
         {
             (IntPtr, int) par = CardboardQrCode.GetDeviceParamsPointer();
@@ -95,6 +114,7 @@ namespace MobfishCardboard
             }
 
             deviceParameter = CardboardQrCode.GetDecodedDeviceParams();
+            //todo do we need to destroy it before create it?
             CardboardLensDistortion.CreateLensDistortion(par.Item1, par.Item2);
             profileAvailable = true;
         }
