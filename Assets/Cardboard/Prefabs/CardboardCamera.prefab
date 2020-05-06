@@ -127,7 +127,7 @@ MonoBehaviour:
   vrCamGroup: {fileID: 2266509655204295503}
   novrCamGroup: {fileID: 2266509655392964275}
   defaultEnableVRView: 0
-  dontDestroyOnLoad: 1
+  dontDestroyAndSingleton: 1
 --- !u!81 &2266509654331334813
 AudioListener:
   m_ObjectHideFlags: 0

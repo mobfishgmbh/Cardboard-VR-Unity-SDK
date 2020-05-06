@@ -14,25 +14,26 @@ namespace MobfishCardboardDemo
         public MeshFilter testEyeMeshLeft;
         public MeshFilter testEyeMeshRight;
 
+        private void Awake()
+        {
+            debugTextStatic.text = string.Format("System: \r\n GraphicAPI={0}", SystemInfo.graphicsDeviceType);
+        }
+
         // Start is called before the first frame update
         void Start()
         {
-            CardboardManager.deviceParamsChangeEvent += DeviceParamsChanged;
-        }
-
-        private void DeviceParamsChanged()
-        {
-            debugTextStatic.text = string.Format("eyefromhead=\r\n{0}", CardboardManager.eyeFromHeadMatrixLeft);
         }
 
         private void OnEnable()
         {
             CardboardManager.deviceParamsChangeEvent += RefreshCameraProperty;
+            CardboardManager.deviceParamsChangeEvent += DeviceParamsChanged;
         }
 
         private void OnDisable()
         {
             CardboardManager.deviceParamsChangeEvent -= RefreshCameraProperty;
+            CardboardManager.deviceParamsChangeEvent -= DeviceParamsChanged;
         }
 
         // Update is called once per frame
@@ -51,6 +52,11 @@ namespace MobfishCardboardDemo
         private void OnApplicationPause(bool pauseStatus)
         {
             Debug.Log("OnApplicationPause called, pauseStatus=" + pauseStatus);
+        }
+
+        private void DeviceParamsChanged()
+        {
+            // debugTextStatic.text = string.Format("eyefromhead=\r\n{0}", CardboardManager.eyeFromHeadMatrixLeft);
         }
 
         private void RefreshCameraProperty()
