@@ -76,7 +76,14 @@ namespace MobfishCardboard
             #endif
         }
 
-        public static void SetCardboardProfile(string url) {
+        public static void SetCardboardProfile(string url)
+        {
+            if (string.IsNullOrWhiteSpace(url))
+                return;
+
+            Debug.LogFormat("CardboardQrCode.SetCardboardProfile() called, url: \r\n{0}",
+                url);
+
             #if NATIVE_PLUGIN_EXIST && UNITY_IOS
             loadDeviceParamertersFromURL (url, LoadDeviceParamCallback);
             #endif
