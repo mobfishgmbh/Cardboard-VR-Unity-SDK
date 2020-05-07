@@ -19,7 +19,7 @@ namespace MobfishCardboard
 
         //todo reduce memory alloc within the file
 
-        private const ulong kPrediction = 50000000;
+        private const long kPrediction = 50000000;
         private static readonly Matrix4x4 flipZ = Matrix4x4.Scale(new Vector3(1, 1, -1));
 
         private static IntPtr _headTracker;
@@ -46,6 +46,14 @@ namespace MobfishCardboard
 
         [DllImport(CardboardUtility.DLLName)]
         private static extern void CardboardHeadTracker_resume(IntPtr head_tracker);
+
+
+        #if UNITY_IOS
+
+        [DllImport(CardboardUtility.DLLName)]
+        private static extern double CACurrentMediaTime();
+
+        #endif
 
         #else
 
@@ -80,8 +88,24 @@ namespace MobfishCardboard
 
         #endif
 
-        [DllImport(CardboardUtility.DLLName)]
-        private static extern double CACurrentMediaTime();
+        private static long GetMonotonicTime()
+        {
+            #if NATIVE_PLUGIN_EXIST
+
+            #if UNITY_IOS
+            return Convert.ToInt64(CACurrentMediaTime() * 1e9);
+
+            #elif UNITY_ANDROID
+
+            //todo android and editor
+            return 0;
+            #endif
+
+            #else
+            return 0;
+
+            #endif
+        }
 
         public static void CreateTracker()
         {
@@ -101,13 +125,13 @@ namespace MobfishCardboard
 
         private static void UpdatePoseCardboard()
         {
-            double time = CACurrentMediaTime() * 1e9;
-            time += kPrediction;
+            long time = GetMonotonicTime();
+            time = time + kPrediction;
 
             float[] _position = new float[3];
             float[] _orientation = new float[4];
 
-            CardboardHeadTracker_getPose(_headTracker, Convert.ToInt64(time), _position, _orientation);
+            CardboardHeadTracker_getPose(_headTracker, time, _position, _orientation);
 
             //Need help, reading from _orientation is not normal.
             trackerRawPosition = new Vector3(_position[0], _position[1], _position[2]);
@@ -117,7 +141,8 @@ namespace MobfishCardboard
             Matrix4x4 unityPoseMat = flipZ * deviceRawPoseMat * flipZ;
 
             trackerUnityPosition = unityPoseMat.GetColumn(3);
-            trackerUnityRotation = new Quaternion(trackerRawRotation.x, trackerRawRotation.y, -trackerRawRotation.z, trackerRawRotation.w);            
+            trackerUnityRotation = new Quaternion(trackerRawRotation.x, trackerRawRotation.y, -trackerRawRotation.z,
+                trackerRawRotation.w);
         }
 
         private static void UpdatePoseGyro()
