@@ -13,6 +13,7 @@ namespace MobfishCardboardDemo
         public Text debugTextStatic;
         public MeshFilter testEyeMeshLeft;
         public MeshFilter testEyeMeshRight;
+        public Transform testHeadFollower;
 
         private void Awake()
         {
@@ -42,6 +43,10 @@ namespace MobfishCardboardDemo
             debugText.text = string.Format("device rot={0}, \r\nUnity rot={1}",
                 CardboardHeadTracker.trackerRawRotation.eulerAngles,
                 CardboardHeadTracker.trackerUnityRotation.eulerAngles);
+
+            Pose headPose = CardboardManager.GetHeadPose();
+            testHeadFollower.localRotation = headPose.rotation;
+            testHeadFollower.localPosition = headPose.position;
         }
 
         private void OnApplicationFocus(bool hasFocus)
