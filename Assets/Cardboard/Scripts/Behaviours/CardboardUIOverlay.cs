@@ -11,8 +11,15 @@ namespace MobfishCardboard
         //Only used in dontDestroyAndSingleton
         private static CardboardUIOverlay instance;
 
-        public Button scanQRButton;
+        [Header("NoVRViewElements")]
         public Button switchVRButton;
+
+        [Header("VRViewElements")]
+        public Button scanQRButton;
+        public Button closeButton;
+        public GameObject splitLine;
+
+        [Header("QROverlay")]
         public Text profileParamText;
         public Button continueButton;
         public GameObject continuePanel;
@@ -39,24 +46,25 @@ namespace MobfishCardboard
                 }
             }
 
-            SetEnableQROverlay(false);
             continueButton.onClick.AddListener(ContinueClicked);
             scanQRButton.onClick.AddListener(ScanQRCode);
             switchVRButton.onClick.AddListener(SwitchVRView);
+            closeButton.onClick.AddListener(CloseVRView);
         }
 
         // Start is called before the first frame update
         void Start()
         {
-
-            TriggerRefresh();
-            scanQRButton.gameObject.SetActive(CardboardManager.enableVRView);
+            VRViewChanged();
             CardboardManager.deviceParamsChangeEvent += TriggerRefresh;
+            CardboardManager.enableVRViewChangedEvent += VRViewChanged;
         }
+
 
         private void OnDestroy()
         {
             CardboardManager.deviceParamsChangeEvent -= TriggerRefresh;
+            CardboardManager.enableVRViewChangedEvent -= VRViewChanged;
         }
 
         private void ScanQRCode()
@@ -68,11 +76,29 @@ namespace MobfishCardboard
         private void SwitchVRView()
         {
             CardboardManager.SetVRViewEnable(!CardboardManager.enableVRView);
+        }
 
+        private void CloseVRView()
+        {
+            CardboardManager.SetVRViewEnable(false);
+        }
+
+        private void VRViewChanged()
+        {
             SetEnableQROverlay(false);
-            scanQRButton.gameObject.SetActive(CardboardManager.enableVRView);
+            SetUIStatus(CardboardManager.enableVRView);
+        }
 
-            TriggerRefresh();
+        private void SetUIStatus(bool isVREnabled)
+        {
+            scanQRButton.gameObject.SetActive(isVREnabled);
+            closeButton.gameObject.SetActive(isVREnabled);
+            splitLine.SetActive(isVREnabled);
+
+            switchVRButton.gameObject.SetActive(!isVREnabled);
+
+            if (isVREnabled)
+                TriggerRefresh();
         }
 
         private void SetEnableQROverlay(bool shouldEnable)
