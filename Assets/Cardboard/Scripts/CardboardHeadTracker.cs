@@ -161,9 +161,12 @@ namespace MobfishCardboard
             trackerUnityRotation = Quaternion.Euler(90, 0, 0) * rawConvert;
         }
 
-        public static void RecenterCamera(){
+        public static void RecenterCamera(bool HorizontalOnly = true){
             trackerUnityRotationOffset = new Quaternion(trackerRawRotation.x, trackerRawRotation.y, -trackerRawRotation.z,
                 trackerRawRotation.w);
+            if (HorizontalOnly){
+                trackerUnityRotationOffset = Quaternion.AngleAxis(trackerUnityRotationOffset.eulerAngles.y, Vector3.up);
+            }
         }
 
         public static void PauseTracker()
