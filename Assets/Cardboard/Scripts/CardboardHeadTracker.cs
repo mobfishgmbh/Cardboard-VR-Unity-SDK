@@ -29,6 +29,7 @@ namespace MobfishCardboard
         public static Quaternion trackerRawRotation { get; private set; }
         public static Vector3 trackerUnityPosition { get; private set; }
         public static Quaternion trackerUnityRotation { get; private set; }
+        private static Quaternion trackerUnityRotationOffset;
 
         #if NATIVE_PLUGIN_EXIST
         [DllImport(CardboardUtility.DLLName)]
@@ -112,6 +113,11 @@ namespace MobfishCardboard
             Input.gyro.enabled = true;
             gyro = Input.gyro;
             _headTracker = CardboardHeadTracker_create();
+            Init();
+        }
+
+        private static void Init(){
+            trackerUnityRotationOffset = Quaternion.identity;
         }
 
         public static void UpdatePose()
@@ -143,6 +149,7 @@ namespace MobfishCardboard
             trackerUnityPosition = unityPoseMat.GetColumn(3);
             trackerUnityRotation = new Quaternion(trackerRawRotation.x, trackerRawRotation.y, -trackerRawRotation.z,
                 trackerRawRotation.w);
+            trackerUnityRotation = Quaternion.Inverse (trackerUnityRotationOffset) * trackerUnityRotation;
         }
 
         private static void UpdatePoseGyro()
@@ -152,6 +159,14 @@ namespace MobfishCardboard
             Quaternion rawConvert = new Quaternion(trackerRawRotation.x, trackerRawRotation.y, -trackerRawRotation.z,
                 -trackerRawRotation.w);
             trackerUnityRotation = Quaternion.Euler(90, 0, 0) * rawConvert;
+        }
+
+        public static void RecenterCamera(bool HorizontalOnly = true){
+            trackerUnityRotationOffset = new Quaternion(trackerRawRotation.x, trackerRawRotation.y, -trackerRawRotation.z,
+                trackerRawRotation.w);
+            if (HorizontalOnly){
+                trackerUnityRotationOffset = Quaternion.AngleAxis(trackerUnityRotationOffset.eulerAngles.y, Vector3.up);
+            }
         }
 
         public static void PauseTracker()
