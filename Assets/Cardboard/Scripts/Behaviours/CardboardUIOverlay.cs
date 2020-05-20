@@ -126,7 +126,7 @@ namespace MobfishCardboard
             if (CardboardManager.deviceParameter != null)
             {
                 profileParamText.text =
-                    CardboardManager.deviceParameter.Vendor + " " + CardboardManager.deviceParameter.Model;
+                    CardboardManager.deviceParameter.Vendor + "\r\n" + CardboardManager.deviceParameter.Model;
             }
         }
     }
