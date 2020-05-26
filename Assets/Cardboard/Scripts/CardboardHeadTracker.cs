@@ -139,7 +139,6 @@ namespace MobfishCardboard
 
             CardboardHeadTracker_getPose(_headTracker, time, _position, _orientation);
 
-            //Need help, reading from _orientation is not normal.
             trackerRawPosition = new Vector3(_position[0], _position[1], _position[2]);
             trackerRawRotation = new Quaternion(_orientation[0], _orientation[1], _orientation[2], _orientation[3]);
 
@@ -161,10 +160,10 @@ namespace MobfishCardboard
             trackerUnityRotation = Quaternion.Euler(90, 0, 0) * rawConvert;
         }
 
-        public static void RecenterCamera(bool HorizontalOnly = true){
+        public static void RecenterCamera(bool horizontalOnly = true){
             trackerUnityRotationOffset = new Quaternion(trackerRawRotation.x, trackerRawRotation.y, -trackerRawRotation.z,
                 trackerRawRotation.w);
-            if (HorizontalOnly){
+            if (horizontalOnly){
                 trackerUnityRotationOffset = Quaternion.AngleAxis(trackerUnityRotationOffset.eulerAngles.y, Vector3.up);
             }
         }

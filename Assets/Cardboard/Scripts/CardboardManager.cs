@@ -89,6 +89,11 @@ namespace MobfishCardboard
             enableVRViewChangedEvent?.Invoke();
         }
 
+        public static void RecenterCamera(bool horizontalOnly = true)
+        {
+            CardboardHeadTracker.RecenterCamera(horizontalOnly);
+        }
+
         public static Pose GetHeadPose(bool withUpdate = false)
         {
             if (withUpdate)
