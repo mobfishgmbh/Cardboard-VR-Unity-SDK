@@ -21,7 +21,7 @@ namespace MobfishCardboardDemo
         // Update is called once per frame
         void RecenterCamera()
         {
-            CardboardHeadTracker.RecenterCamera();
+            CardboardManager.RecenterCamera();
         }
     }
 }
