@@ -27,7 +27,10 @@ namespace MobfishCardboard
 
         [DllImport(CardboardUtility.DLLName)]
         private static extern void CardboardQrCode_getCardboardV1DeviceParams(ref IntPtr encoded_device_params, ref int size);
-        
+
+        [DllImport(CardboardUtility.DLLName)]
+        private static extern int CardboardQrCode_getQrCodeScanCount();
+
         //New method for libCardboardUtility, iOS only.
         #if UNITY_IOS
 
@@ -53,6 +56,11 @@ namespace MobfishCardboard
 
         private static void CardboardQrCode_getCardboardV1DeviceParams(ref IntPtr encoded_device_params, ref int size){
             size = 0;   
+        }
+
+        private static int CardboardQrCode_getQrCodeScanCount()
+        {
+            return 1;
         }
 
         #endif
@@ -131,6 +139,11 @@ namespace MobfishCardboard
 
             Debug.LogFormat("CardboardQrCode.RetrieveCardboardDeviceV1Params() decode device params: \r\n{0}",
                 CardboardUtility.DeviceParamsToString(decodedParams));
+        }
+
+        public static int GetQRCodeScanCount()
+        {
+            return CardboardQrCode_getQrCodeScanCount();
         }
 
         public static (IntPtr, int) GetDeviceParamsPointer()
