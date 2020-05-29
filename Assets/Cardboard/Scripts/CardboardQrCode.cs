@@ -25,6 +25,9 @@ namespace MobfishCardboard
         [DllImport(CardboardUtility.DLLName)]
         private static extern void CardboardQrCode_getSavedDeviceParams(ref IntPtr encoded_device_params, ref int size);
 
+        [DllImport(CardboardUtility.DLLName)]
+        private static extern void CardboardQrCode_getCardboardV1DeviceParams(ref IntPtr encoded_device_params, ref int size);
+
         //New method for libCardboardUtility, iOS only.
         #if UNITY_IOS
 
@@ -44,6 +47,11 @@ namespace MobfishCardboard
         }
 
         private static void CardboardQrCode_getSavedDeviceParams(ref IntPtr encoded_device_params, ref int size)
+        {
+            size = 0;
+        }
+
+        private static void CardboardQrCode_getCardboardV1DeviceParams(ref IntPtr encoded_device_params, ref int size)
         {
             size = 0;
         }

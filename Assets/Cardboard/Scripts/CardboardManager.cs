@@ -32,14 +32,25 @@ namespace MobfishCardboard
         {
             if (!initiated)
             {
+                #if UNITY_ANDROID
+                Debug.LogWarning("Feature Test point 1");
+                CardboardAndroidInitialization.InitAndroid();
+
+                #endif
+
                 CardboardHeadTracker.CreateTracker();
                 CardboardHeadTracker.ResumeTracker();
+
+                Debug.LogWarning("Feature Test point 2");
 
                 CardboardQrCode.RegisterObserver();
                 Application.quitting += ApplicationQuit;
                 initiated = true;
+
+                Debug.LogWarning("Feature Test point 3");
             }
             RefreshParameters();
+            Debug.LogWarning("Feature Test point 4");
         }
 
         private static void ApplicationQuit()
@@ -116,6 +127,11 @@ namespace MobfishCardboard
                 profileAvailable = false;
                 LoadDefaultProfile();
                 par = CardboardQrCode.GetDeviceParamsPointer();
+            }
+
+            if (par.Item2 == 0 && !Application.isEditor)
+            {
+
             }
 
             deviceParameter = CardboardQrCode.GetDecodedDeviceParams();
