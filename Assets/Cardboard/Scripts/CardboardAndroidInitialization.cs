@@ -31,7 +31,7 @@ namespace MobfishCardboard
             AndroidJavaObject activityObject = unityClass.GetStatic<AndroidJavaObject>(UNITY_ANDROID_ACTIVITY_CURRENT);
             AndroidJavaObject contextObject = activityObject.Call<AndroidJavaObject>(UNITY_ANDROID_CONTEXT);
 
-            CardboardUnity_initializeAndroid(contextObject.GetRawObject());
+            CardboardUnity_initializeAndroid(activityObject.GetRawObject());
         }
     }
 }
