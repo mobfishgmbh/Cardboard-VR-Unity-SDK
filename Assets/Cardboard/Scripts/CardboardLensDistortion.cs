@@ -37,10 +37,6 @@ namespace MobfishCardboard
             IntPtr lens_Distortion, CardboardEye eye, ref CardboardMesh mesh);
 
         [DllImport(CardboardUtility.DLLName)]
-        private static extern void CardboardLensDistortion_getEyeMatrices(
-            IntPtr lens_Distortion, float[] projection_matrix, float[] eye_from_head_matrix, CardboardEye eye);
-
-        [DllImport(CardboardUtility.DLLName)]
         private static extern CardboardUv CardboardLensDistortion_distortedUvForUndistortedUv(
             IntPtr lens_Distortion, CardboardUv undistorted_uv, CardboardEye eye);
 
@@ -48,6 +44,15 @@ namespace MobfishCardboard
         private static extern CardboardUv CardboardLensDistortion_undistortedUvForDistortedUv(
             IntPtr lens_Distortion, CardboardUv distorted_uv, CardboardEye eye);
 
+
+        [DllImport(CardboardUtility.DLLName)]
+        private static extern void CardboardLensDistortion_getProjectionMatrix(IntPtr lens_Distortion, CardboardEye eye, float z_near, float z_far, float[] projection_matrix);
+
+        [DllImport(CardboardUtility.DLLName)]
+        private static extern void CardboardLensDistortion_getEyeFromHeadMatrix(IntPtr lens_Distortion, CardboardEye eye, float[] eye_from_head_matrix);
+
+        [DllImport(CardboardUtility.DLLName)]
+        private static extern void CardboardLensDistortion_getFieldOfView(IntPtr lens_Distortion, CardboardEye eye, ref float field_of_view);
         #else
 
         private static IntPtr CardboardLensDistortion_create(
@@ -66,13 +71,6 @@ namespace MobfishCardboard
             mesh = CardboardUtility.CreateMockupCardboardMesh(eye);
         }
 
-        private static void CardboardLensDistortion_getEyeMatrices(
-            IntPtr lens_Distortion, float[] projection_matrix, float[] eye_from_head_matrix, CardboardEye eye)
-        {
-            CardboardUtility.Matrix4x4ToArray(Matrix4x4.Perspective(70, 0.8f, 0.5f, 1000)).CopyTo(projection_matrix, 0);
-            eye_from_head_matrix.Initialize();
-        }
-
         private static CardboardUv CardboardLensDistortion_distortedUvForUndistortedUv(
             IntPtr lens_Distortion, CardboardUv undistorted_uv, CardboardEye eye)
         {
@@ -84,7 +82,17 @@ namespace MobfishCardboard
         {
             return distorted_uv;
         }
+        private static void CardboardLensDistortion_getProjectionMatrix(IntPtr lens_Distortion, CardboardEye eye, float z_near, float z_far, float[] projection_matrix){
+            CardboardUtility.Matrix4x4ToArray(Matrix4x4.Perspective(70, 0.8f, 0.5f, 1000)).CopyTo(projection_matrix, 0);
+        }
 
+        private static void CardboardLensDistortion_getEyeFromHeadMatrix(IntPtr lens_Distortion, CardboardEye eye, float[] eye_from_head_matrix){
+            eye_from_head_matrix.Initialize();
+        }
+
+        private static void CardboardLensDistortion_getFieldOfView(IntPtr lens_Distortion, CardboardEye eye, ref float field_of_view){
+            field_of_view = 60.0f;
+        }
         #endif
 
         public static void CreateLensDistortion(IntPtr encoded_device_params, int params_size)
@@ -121,10 +129,11 @@ namespace MobfishCardboard
             eyeFromHeadMatrixLeft = new float[16];
             projectionMatrixRight = new float[16];
             eyeFromHeadMatrixRight = new float[16];
-            CardboardLensDistortion_getEyeMatrices(_lensDistortion, projectionMatrixLeft, eyeFromHeadMatrixLeft,
-                CardboardEye.kLeft);
-            CardboardLensDistortion_getEyeMatrices(_lensDistortion, projectionMatrixRight, eyeFromHeadMatrixRight,
-                CardboardEye.kRight);
+            CardboardLensDistortion_getProjectionMatrix(_lensDistortion, CardboardEye.kLeft, 0.1f, 100f, projectionMatrixLeft);
+            CardboardLensDistortion_getProjectionMatrix(_lensDistortion, CardboardEye.kRight, 0.1f, 100f, projectionMatrixRight);
+
+            CardboardLensDistortion_getEyeFromHeadMatrix(_lensDistortion, CardboardEye.kLeft, eyeFromHeadMatrixLeft);
+            CardboardLensDistortion_getEyeFromHeadMatrix(_lensDistortion, CardboardEye.kRight, eyeFromHeadMatrixRight);
         }
 
         public static Matrix4x4 GetProjectionMatrix(CardboardEye eye)

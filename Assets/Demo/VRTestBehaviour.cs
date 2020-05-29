@@ -62,6 +62,7 @@ namespace MobfishCardboardDemo
         private void DeviceParamsChanged()
         {
             // debugTextStatic.text = string.Format("eyefromhead=\r\n{0}", CardboardManager.eyeFromHeadMatrixLeft);
+            Debug.Log("qr code scan count=" + CardboardQrCode.GetQRCodeScanCount());
         }
 
         private void RefreshCameraProperty()
