@@ -27,8 +27,8 @@ namespace MobfishCardboard
             IntPtr renderer, ref CardboardMesh mesh, CardboardEye eye);
 
         [DllImport(CardboardUtility.DLLName)]
-        private static extern void CardboardDestortionRenderer_renderEyeToDisplay(IntPtr renderer,
-            int target_display, int display_width, int display_height,
+        private static extern void CardboardDistortionRenderer_renderEyeToDisplay(IntPtr renderer,
+            int target_display, int rectX, int rectY, int display_width, int display_height,
             CardboardEyeTextureDescription left_eye, CardboardEyeTextureDescription right_eye);
 
         #else
@@ -45,8 +45,8 @@ namespace MobfishCardboard
         {
         }
 
-        private static void CardboardDestortionRenderer_renderEyeToDisplay(IntPtr renderer,
-            int target_display, int display_width, int display_height,
+        private static void CardboardDistortionRenderer_renderEyeToDisplay(IntPtr renderer,
+            int target_display, int rectX, int rectY, int display_width, int display_height,
             CardboardEyeTextureDescription left_eye, CardboardEyeTextureDescription right_eye)
         {
         }
@@ -67,7 +67,7 @@ namespace MobfishCardboard
         public static void RenderEyeToDisplay(
             CardboardEyeTextureDescription left_eye, CardboardEyeTextureDescription right_eye)
         {
-            CardboardDestortionRenderer_renderEyeToDisplay(_cardboardDistortionRenderer, 0, Screen.width, Screen.height,
+            CardboardDistortionRenderer_renderEyeToDisplay(_cardboardDistortionRenderer, 0, 0, 0, Screen.width, Screen.height,
                 left_eye, right_eye);
         }
     }

@@ -25,6 +25,12 @@ namespace MobfishCardboard
         [DllImport(CardboardUtility.DLLName)]
         private static extern void CardboardQrCode_getSavedDeviceParams(ref IntPtr encoded_device_params, ref int size);
 
+        [DllImport(CardboardUtility.DLLName)]
+        private static extern void CardboardQrCode_getCardboardV1DeviceParams(ref IntPtr encoded_device_params, ref int size);
+
+        [DllImport(CardboardUtility.DLLName)]
+        private static extern int CardboardQrCode_getQrCodeScanCount();
+
         //New method for libCardboardUtility, iOS only.
         #if UNITY_IOS
 
@@ -46,6 +52,15 @@ namespace MobfishCardboard
         private static void CardboardQrCode_getSavedDeviceParams(ref IntPtr encoded_device_params, ref int size)
         {
             size = 0;
+        }
+
+        private static void CardboardQrCode_getCardboardV1DeviceParams(ref IntPtr encoded_device_params, ref int size){
+            size = 0;   
+        }
+
+        private static int CardboardQrCode_getQrCodeScanCount()
+        {
+            return 1;
         }
 
         #endif
@@ -110,6 +125,25 @@ namespace MobfishCardboard
             //     encodedBytes.Length, string.Join(" , ", encodedBytes));
             Debug.LogFormat("CardboardQrCode.RetrieveDeviceParam() decode device params: \r\n{0}",
                 CardboardUtility.DeviceParamsToString(decodedParams));
+        }
+
+        public static void RetrieveCardboardDeviceV1Params()
+        {
+            CardboardQrCode_getCardboardV1DeviceParams(ref _encodedDeviceParams, ref _paramsSize);
+
+            Debug.Log("CardboardQrCode.RetrieveCardboardDeviceV1Params() size=" + _paramsSize);
+            encodedBytes = ReadByteArray(_encodedDeviceParams, _paramsSize);
+
+            if (_paramsSize > 0)
+                decodedParams = DeviceParams.Parser.ParseFrom(encodedBytes);
+
+            Debug.LogFormat("CardboardQrCode.RetrieveCardboardDeviceV1Params() decode device params: \r\n{0}",
+                CardboardUtility.DeviceParamsToString(decodedParams));
+        }
+
+        public static int GetQRCodeScanCount()
+        {
+            return CardboardQrCode_getQrCodeScanCount();
         }
 
         public static (IntPtr, int) GetDeviceParamsPointer()
