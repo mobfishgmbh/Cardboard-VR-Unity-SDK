@@ -38,7 +38,9 @@ namespace MobfishCardboard
             return IntPtr.Zero;
         }
 
-        private static void CardboardDistortionRenderer_destroy(IntPtr renderer){}
+        private static void CardboardDistortionRenderer_destroy(IntPtr renderer)
+        {
+        }
 
         private static void CardboardDistortionRenderer_setMesh(
             IntPtr renderer, ref CardboardMesh mesh, CardboardEye eye)
@@ -67,8 +69,8 @@ namespace MobfishCardboard
         public static void RenderEyeToDisplay(
             CardboardEyeTextureDescription left_eye, CardboardEyeTextureDescription right_eye)
         {
-            CardboardDistortionRenderer_renderEyeToDisplay(_cardboardDistortionRenderer, 0, 0, 0, Screen.width, Screen.height,
-                left_eye, right_eye);
+            CardboardDistortionRenderer_renderEyeToDisplay(_cardboardDistortionRenderer, 0, 0, 0,
+                Screen.width, Screen.height, left_eye, right_eye);
         }
     }
 }

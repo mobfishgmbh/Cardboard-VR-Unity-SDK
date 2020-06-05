@@ -54,8 +54,9 @@ namespace MobfishCardboard
             size = 0;
         }
 
-        private static void CardboardQrCode_getCardboardV1DeviceParams(ref IntPtr encoded_device_params, ref int size){
-            size = 0;   
+        private static void CardboardQrCode_getCardboardV1DeviceParams(ref IntPtr encoded_device_params, ref int size)
+        {
+            size = 0;
         }
 
         private static int CardboardQrCode_getQrCodeScanCount()

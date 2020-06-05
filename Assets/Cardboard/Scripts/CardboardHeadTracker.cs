@@ -92,7 +92,6 @@ namespace MobfishCardboard
         private static long GetMonotonicTime()
         {
             #if NATIVE_PLUGIN_EXIST
-
             #if UNITY_IOS
             return Convert.ToInt64(CACurrentMediaTime() * 1e9);
 
@@ -116,7 +115,8 @@ namespace MobfishCardboard
             Init();
         }
 
-        private static void Init(){
+        private static void Init()
+        {
             trackerUnityRotationOffset = Quaternion.identity;
         }
 
@@ -148,7 +148,7 @@ namespace MobfishCardboard
             trackerUnityPosition = unityPoseMat.GetColumn(3);
             trackerUnityRotation = new Quaternion(trackerRawRotation.x, trackerRawRotation.y, -trackerRawRotation.z,
                 trackerRawRotation.w);
-            trackerUnityRotation = Quaternion.Inverse (trackerUnityRotationOffset) * trackerUnityRotation;
+            trackerUnityRotation = Quaternion.Inverse(trackerUnityRotationOffset) * trackerUnityRotation;
         }
 
         private static void UpdatePoseGyro()
@@ -160,10 +160,12 @@ namespace MobfishCardboard
             trackerUnityRotation = Quaternion.Euler(90, 0, 0) * rawConvert;
         }
 
-        public static void RecenterCamera(bool horizontalOnly = true){
-            trackerUnityRotationOffset = new Quaternion(trackerRawRotation.x, trackerRawRotation.y, -trackerRawRotation.z,
-                trackerRawRotation.w);
-            if (horizontalOnly){
+        public static void RecenterCamera(bool horizontalOnly = true)
+        {
+            trackerUnityRotationOffset = new Quaternion(trackerRawRotation.x, trackerRawRotation.y,
+                -trackerRawRotation.z, trackerRawRotation.w);
+            if (horizontalOnly)
+            {
                 trackerUnityRotationOffset = Quaternion.AngleAxis(trackerUnityRotationOffset.eulerAngles.y, Vector3.up);
             }
         }
