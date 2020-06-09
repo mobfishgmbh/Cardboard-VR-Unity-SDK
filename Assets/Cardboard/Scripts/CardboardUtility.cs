@@ -8,7 +8,9 @@ namespace MobfishCardboard
     public static class CardboardUtility
     {
         public const string DLLName = "__Internal";
+
         public const int kResolution = 40;
+        public const string KEY_CARDBOARD_CAMERA_SCANNED = "mobfishCardboardCamScanned";
 
         //https://github.com/googlevr/cardboard/blob/master/sdk/qrcode/ios/device_params_helper.mm
         public const string defaultCardboardUrl = "http://g.co/cardboard";

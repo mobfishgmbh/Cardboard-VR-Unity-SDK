@@ -54,8 +54,9 @@ namespace MobfishCardboard
             size = 0;
         }
 
-        private static void CardboardQrCode_getCardboardV1DeviceParams(ref IntPtr encoded_device_params, ref int size){
-            size = 0;   
+        private static void CardboardQrCode_getCardboardV1DeviceParams(ref IntPtr encoded_device_params, ref int size)
+        {
+            size = 0;
         }
 
         private static int CardboardQrCode_getQrCodeScanCount()
@@ -70,6 +71,12 @@ namespace MobfishCardboard
         {
             Debug.Log("QRCodeScannedCallback received in Unity!!");
             CardboardManager.RefreshParameters();
+
+            if (GetQRCodeScanCount() > 0 && !PlayerPrefs.HasKey(CardboardUtility.KEY_CARDBOARD_CAMERA_SCANNED))
+            {
+                PlayerPrefs.SetInt(CardboardUtility.KEY_CARDBOARD_CAMERA_SCANNED, 1);
+                PlayerPrefs.Save();
+            }
         }
 
         [AOT.MonoPInvokeCallback(typeof(QRCodeScannedCallbackType))]
@@ -89,6 +96,13 @@ namespace MobfishCardboard
             #if NATIVE_PLUGIN_EXIST && UNITY_IOS
             registerObserver(QRCodeScannedCallback);
             #endif
+        }
+
+        public static void SetCardboardInitialProfile(string url)
+        {
+            if (!PlayerPrefs.HasKey(CardboardUtility.KEY_CARDBOARD_CAMERA_SCANNED) ||
+                PlayerPrefs.GetInt(CardboardUtility.KEY_CARDBOARD_CAMERA_SCANNED) == 0)
+                SetCardboardProfile(url);
         }
 
         public static void SetCardboardProfile(string url)

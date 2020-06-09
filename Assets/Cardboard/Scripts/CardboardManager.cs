@@ -55,10 +55,17 @@ namespace MobfishCardboard
             SetCardboardProfile(CardboardUtility.defaultCardboardUrl);
         }
 
-        //This function can be used to change current device paramters
+        //This method can be used to change current device paramters
         public static void SetCardboardProfile(string url)
         {
             CardboardQrCode.SetCardboardProfile(url);
+        }
+
+        //This method will set cardbaord profile ONLY when cardboard qr has not yet been scanned by camera.
+        //This behaviour is the same as the legacy cardboard gvr_set_default_viewer_profile
+        public static void SetCardboardInitialProfile(string url)
+        {
+            CardboardQrCode.SetCardboardInitialProfile(url);
         }
 
         public static void ScanQrCode()
