@@ -65,8 +65,7 @@ namespace MobfishCardboard
         //This behaviour is the same as the legacy cardboard gvr_set_default_viewer_profile
         public static void SetCardboardInitialProfile(string url)
         {
-            if (CardboardQrCode.GetQRCodeScanCount() == 0)
-                CardboardQrCode.SetCardboardProfile(url);
+            CardboardQrCode.SetCardboardInitialProfile(url);
         }
 
         public static void ScanQrCode()
