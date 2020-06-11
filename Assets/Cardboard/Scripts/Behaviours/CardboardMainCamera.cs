@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
 using UnityEngine.Rendering;
 
 namespace MobfishCardboard
@@ -27,9 +28,10 @@ namespace MobfishCardboard
         [Header("Options")]
         [SerializeField]
         private bool defaultEnableVRView;
-        [Tooltip("Set this GameObject DontDestroyOnLoad and Singleton. If it's not needed or any parent GameObject already have DontDestroyOnLoad, disable it")]
+        [Tooltip(
+            "Set this GameObject DontDestroyOnLoad and Singleton. If it's not needed or any parent GameObject already have DontDestroyOnLoad, disable it")]
         [SerializeField]
-        private bool dontDestroyAndSingleton;
+        private bool dontDestroyAndSingleton = true;
 
         private RenderTextureDescriptor eyeRenderTextureDesc;
         private bool overlayIsOpen;
@@ -78,6 +80,18 @@ namespace MobfishCardboard
 
         private void SetupRenderTexture()
         {
+            SetupEyeRenderTextureDescription();
+
+            RenderTexture newLeft = new RenderTexture(eyeRenderTextureDesc);
+            RenderTexture newRight = new RenderTexture(eyeRenderTextureDesc);
+            leftCam.targetTexture = newLeft;
+            rightCam.targetTexture = newRight;
+
+            CardboardManager.SetRenderTexture(newLeft, newRight);
+        }
+
+        private void SetupEyeRenderTextureDescription()
+        {
             eyeRenderTextureDesc = new RenderTextureDescriptor()
             {
                 dimension = TextureDimension.Tex2D,
@@ -89,12 +103,13 @@ namespace MobfishCardboard
                 vrUsage = VRTextureUsage.OneEye
             };
 
-            RenderTexture newLeft = new RenderTexture(eyeRenderTextureDesc);
-            RenderTexture newRight = new RenderTexture(eyeRenderTextureDesc);
-            leftCam.targetTexture = newLeft;
-            rightCam.targetTexture = newRight;
+            #if UNITY_2019_1_OR_NEWER
 
-            CardboardManager.SetRenderTexture(newLeft, newRight);
+            eyeRenderTextureDesc.graphicsFormat = SystemInfo.GetGraphicsFormat(DefaultFormat.LDR);
+            Debug.LogFormat("CardboardMainCamera.SetupEyeRenderTextureDescription(), graphicsFormat={0}",
+                eyeRenderTextureDesc.graphicsFormat);
+
+            #endif
         }
 
         private void SwitchVRCamera()
