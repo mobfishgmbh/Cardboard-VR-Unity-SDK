@@ -1,3 +1,15 @@
-﻿{
-	"name": "MobfishCardboard"
+{
+    "name": "MobfishCardboard",
+    "references": [],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Android",
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
 }
