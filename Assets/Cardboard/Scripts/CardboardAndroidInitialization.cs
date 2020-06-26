@@ -33,6 +33,8 @@ namespace MobfishCardboard
             AndroidJavaObject contextObject = activityObject.Call<AndroidJavaObject>(UNITY_ANDROID_CONTEXT);
 
             CardboardUnity_initializeAndroid(activityObject.GetRawObject());
+
+            CardboardQrCode.SetAndroidQRCodeLocation();
             #endif
 
         }

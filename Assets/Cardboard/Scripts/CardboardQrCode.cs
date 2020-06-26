@@ -39,7 +39,23 @@ namespace MobfishCardboard
         [DllImport(CardboardUtility.DLLName)]
         private static extern void deRegisterObserver();
         [DllImport(CardboardUtility.DLLName)]
-        private static extern void loadDeviceParamertersFromURL (string url, QRCodeScannedCallbackType _callback);
+        private static extern void loadDeviceParamertersFromURL(string url, QRCodeScannedCallbackType _callback);
+
+        #endif
+
+        #if UNITY_ANDROID
+        // Called in CardboardAndroidInitialization
+        public static void SetAndroidQRCodeLocation()
+        {
+            AndroidJavaClass utilClass = new AndroidJavaClass("com.google.cardboard.sdk.qrcode.CardboardParamsUtils");
+            utilClass.CallStatic("setNewFileParent", Application.persistentDataPath);
+        }
+
+        public static void SetDeviceParamertersFromURL(string url)
+        {
+            AndroidJavaClass utilClass = new AndroidJavaClass("com.google.cardboard.sdk.qrcode.CardboardParamsUtils");
+            utilClass.CallStatic<bool>("writeDeviceParamsToStorage", url);
+        }
 
         #endif
 
@@ -87,7 +103,7 @@ namespace MobfishCardboard
         [AOT.MonoPInvokeCallback(typeof(QRCodeScannedCallbackType))]
         private static void LoadDeviceParamCallback(bool success)
         {
-            Debug.Log("LoadDeviceParamCallback called in Unity!!: " + success);
+            Debug.Log("LoadDeviceParamCallback called in Unity");
             CardboardManager.RefreshParameters();
         }
 
@@ -138,8 +154,14 @@ namespace MobfishCardboard
             Debug.LogFormat("CardboardQrCode.SetCardboardProfile() called, url: \r\n{0}",
                 url);
 
-            #if NATIVE_PLUGIN_EXIST && UNITY_IOS
+            #if NATIVE_PLUGIN_EXIST
+            #if UNITY_IOS
             loadDeviceParamertersFromURL(url, LoadDeviceParamCallback);
+            #elif UNITY_ANDROID
+            SetDeviceParamertersFromURL(url);
+            LoadDeviceParamCallback(true);
+            #endif
+
             #endif
         }
 
