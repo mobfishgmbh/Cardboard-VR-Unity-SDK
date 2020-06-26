@@ -44,17 +44,22 @@ namespace MobfishCardboard
         #endif
 
         #if UNITY_ANDROID
+
+        private static string CARDBOARD_PARAMS_UTIL_CLASS = "com.google.cardboard.sdk.qrcode.CardboardParamsUtils";
+        private static string CARDBOARD_PARAMS_METHOD_SETFOLDER = "setNewFileParent";
+        private static string CARDBOARD_PARAMS_METHOD_SETPROFILE = "writeDeviceParamsToStorage";
+
         // Called in CardboardAndroidInitialization
         public static void SetAndroidQRCodeLocation()
         {
-            AndroidJavaClass utilClass = new AndroidJavaClass("com.google.cardboard.sdk.qrcode.CardboardParamsUtils");
-            utilClass.CallStatic("setNewFileParent", Application.persistentDataPath);
+            AndroidJavaClass utilClass = new AndroidJavaClass(CARDBOARD_PARAMS_UTIL_CLASS);
+            utilClass.CallStatic(CARDBOARD_PARAMS_METHOD_SETFOLDER, Application.persistentDataPath);
         }
 
         public static void SetDeviceParamertersFromURL(string url)
         {
-            AndroidJavaClass utilClass = new AndroidJavaClass("com.google.cardboard.sdk.qrcode.CardboardParamsUtils");
-            utilClass.CallStatic<bool>("writeDeviceParamsToStorage", url);
+            AndroidJavaClass utilClass = new AndroidJavaClass(CARDBOARD_PARAMS_UTIL_CLASS);
+            utilClass.CallStatic<bool>(CARDBOARD_PARAMS_METHOD_SETPROFILE, url);
         }
 
         #endif

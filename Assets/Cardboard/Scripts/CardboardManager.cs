@@ -88,13 +88,8 @@ namespace MobfishCardboard
 
             retriving = true;
 
-            Debug.LogWarning("Feature Test point 3.1");
-
             InitDeviceProfile();
-
-            Debug.LogWarning("Feature Test point 3.2");
             InitCameraProperties();
-            Debug.LogWarning("Feature Test point 3.3");
 
             retriving = false;
 
@@ -144,14 +139,11 @@ namespace MobfishCardboard
 
             if (par.Item2 > 0)
             {
-                Debug.LogWarning("Feature Test point 3.1.1");
                 deviceParameter = CardboardQrCode.GetDecodedDeviceParams();
-                Debug.LogWarning("Feature Test point 3.1.2");
                 //todo do we need to destroy it before create it?
 
                 CardboardLensDistortion.CreateLensDistortion(par.Item1, par.Item2);
                 profileAvailable = true;
-                Debug.LogWarning("Feature Test point 3.1.3");
             }
         }
 
