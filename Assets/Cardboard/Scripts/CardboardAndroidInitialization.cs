@@ -27,11 +27,14 @@ namespace MobfishCardboard
 
         public static void InitAndroid()
         {
+            #if NATIVE_PLUGIN_EXIST
             AndroidJavaClass unityClass = new AndroidJavaClass(UNITY_ANDROID_PLAYER);
             AndroidJavaObject activityObject = unityClass.GetStatic<AndroidJavaObject>(UNITY_ANDROID_ACTIVITY_CURRENT);
             AndroidJavaObject contextObject = activityObject.Call<AndroidJavaObject>(UNITY_ANDROID_CONTEXT);
 
             CardboardUnity_initializeAndroid(activityObject.GetRawObject());
+            #endif
+
         }
     }
 }

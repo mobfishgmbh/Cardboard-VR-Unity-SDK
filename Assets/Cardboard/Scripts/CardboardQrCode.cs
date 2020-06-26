@@ -26,14 +26,14 @@ namespace MobfishCardboard
         private static extern void CardboardQrCode_getSavedDeviceParams(ref IntPtr encoded_device_params, ref int size);
 
         [DllImport(CardboardUtility.DLLName)]
-        private static extern void CardboardQrCode_getCardboardV1DeviceParams(ref IntPtr encoded_device_params, ref int size);
+        private static extern void CardboardQrCode_getCardboardV1DeviceParams(ref IntPtr encoded_device_params,
+            ref int size);
 
         [DllImport(CardboardUtility.DLLName)]
         private static extern int CardboardQrCode_getQrCodeScanCount();
 
         //New method for libCardboardUtility, iOS only.
         #if UNITY_IOS
-
         [DllImport(CardboardUtility.DLLName)]
         private static extern void registerObserver(QRCodeScannedCallbackType _callback);
         [DllImport(CardboardUtility.DLLName)]
@@ -44,7 +44,6 @@ namespace MobfishCardboard
         #endif
 
         #else
-
         private static void CardboardQrCode_scanQrCodeAndSaveDeviceParams()
         {
         }
@@ -79,6 +78,12 @@ namespace MobfishCardboard
             }
         }
 
+        private static void AppFocusChanged(bool hasFocus)
+        {
+            if (hasFocus)
+                QRCodeScannedCallback(true);
+        }
+
         [AOT.MonoPInvokeCallback(typeof(QRCodeScannedCallbackType))]
         private static void LoadDeviceParamCallback(bool success)
         {
@@ -96,8 +101,25 @@ namespace MobfishCardboard
 
         public static void RegisterObserver()
         {
-            #if NATIVE_PLUGIN_EXIST && UNITY_IOS
+            #if NATIVE_PLUGIN_EXIST
+            #if UNITY_IOS
             registerObserver(QRCodeScannedCallback);
+            #else
+            Application.focusChanged += AppFocusChanged;
+            #endif
+
+            #endif
+        }
+
+        public static void DeRegisterObserver()
+        {
+            #if NATIVE_PLUGIN_EXIST
+            #if UNITY_IOS
+            deRegisterObserver();
+            #else
+            Application.focusChanged -= AppFocusChanged;
+            #endif
+
             #endif
         }
 
@@ -117,14 +139,7 @@ namespace MobfishCardboard
                 url);
 
             #if NATIVE_PLUGIN_EXIST && UNITY_IOS
-            loadDeviceParamertersFromURL (url, LoadDeviceParamCallback);
-            #endif
-        }
-
-        public static void DeRegisterObserver()
-        {
-            #if NATIVE_PLUGIN_EXIST && UNITY_IOS
-            deRegisterObserver();
+            loadDeviceParamertersFromURL(url, LoadDeviceParamCallback);
             #endif
         }
 
