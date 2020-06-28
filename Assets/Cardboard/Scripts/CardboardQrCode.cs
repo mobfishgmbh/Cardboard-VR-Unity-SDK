@@ -26,25 +26,45 @@ namespace MobfishCardboard
         private static extern void CardboardQrCode_getSavedDeviceParams(ref IntPtr encoded_device_params, ref int size);
 
         [DllImport(CardboardUtility.DLLName)]
-        private static extern void CardboardQrCode_getCardboardV1DeviceParams(ref IntPtr encoded_device_params, ref int size);
+        private static extern void CardboardQrCode_getCardboardV1DeviceParams(ref IntPtr encoded_device_params,
+            ref int size);
 
         [DllImport(CardboardUtility.DLLName)]
         private static extern int CardboardQrCode_getQrCodeScanCount();
 
         //New method for libCardboardUtility, iOS only.
         #if UNITY_IOS
-
         [DllImport(CardboardUtility.DLLName)]
         private static extern void registerObserver(QRCodeScannedCallbackType _callback);
         [DllImport(CardboardUtility.DLLName)]
         private static extern void deRegisterObserver();
         [DllImport(CardboardUtility.DLLName)]
-        private static extern void loadDeviceParamertersFromURL (string url, QRCodeScannedCallbackType _callback);
+        private static extern void loadDeviceParamertersFromURL(string url, QRCodeScannedCallbackType _callback);
+
+        #endif
+
+        #if UNITY_ANDROID
+
+        private static string CARDBOARD_PARAMS_UTIL_CLASS = "com.google.cardboard.sdk.qrcode.CardboardParamsUtils";
+        private static string CARDBOARD_PARAMS_METHOD_SETFOLDER = "setNewFileParent";
+        private static string CARDBOARD_PARAMS_METHOD_SETPROFILE = "writeDeviceParamsToStorage";
+
+        // Called in CardboardAndroidInitialization
+        public static void SetAndroidQRCodeLocation()
+        {
+            AndroidJavaClass utilClass = new AndroidJavaClass(CARDBOARD_PARAMS_UTIL_CLASS);
+            utilClass.CallStatic(CARDBOARD_PARAMS_METHOD_SETFOLDER, Application.persistentDataPath);
+        }
+
+        public static void SetDeviceParamertersFromURL(string url)
+        {
+            AndroidJavaClass utilClass = new AndroidJavaClass(CARDBOARD_PARAMS_UTIL_CLASS);
+            utilClass.CallStatic<bool>(CARDBOARD_PARAMS_METHOD_SETPROFILE, url);
+        }
 
         #endif
 
         #else
-
         private static void CardboardQrCode_scanQrCodeAndSaveDeviceParams()
         {
         }
@@ -79,22 +99,48 @@ namespace MobfishCardboard
             }
         }
 
+        private static void AppFocusChanged(bool hasFocus)
+        {
+            if (hasFocus)
+                QRCodeScannedCallback(true);
+        }
+
         [AOT.MonoPInvokeCallback(typeof(QRCodeScannedCallbackType))]
         private static void LoadDeviceParamCallback(bool success)
         {
-            Debug.Log("LoadDeviceParamCallback called in Unity!!: " + success);
+            Debug.Log("LoadDeviceParamCallback called in Unity");
             CardboardManager.RefreshParameters();
         }
 
         public static void StartScanQrCode()
         {
+            Debug.Log("CardboardQrCode.StartScanQrCode() called");
+            GetQRCodeScanCount();
             CardboardQrCode_scanQrCodeAndSaveDeviceParams();
+            Debug.Log("CardboardQrCode.StartScanQrCode() call finish");
         }
 
         public static void RegisterObserver()
         {
-            #if NATIVE_PLUGIN_EXIST && UNITY_IOS
+            #if NATIVE_PLUGIN_EXIST
+            #if UNITY_IOS
             registerObserver(QRCodeScannedCallback);
+            #else
+            Application.focusChanged += AppFocusChanged;
+            #endif
+
+            #endif
+        }
+
+        public static void DeRegisterObserver()
+        {
+            #if NATIVE_PLUGIN_EXIST
+            #if UNITY_IOS
+            deRegisterObserver();
+            #else
+            Application.focusChanged -= AppFocusChanged;
+            #endif
+
             #endif
         }
 
@@ -113,15 +159,14 @@ namespace MobfishCardboard
             Debug.LogFormat("CardboardQrCode.SetCardboardProfile() called, url: \r\n{0}",
                 url);
 
-            #if NATIVE_PLUGIN_EXIST && UNITY_IOS
-            loadDeviceParamertersFromURL (url, LoadDeviceParamCallback);
+            #if NATIVE_PLUGIN_EXIST
+            #if UNITY_IOS
+            loadDeviceParamertersFromURL(url, LoadDeviceParamCallback);
+            #elif UNITY_ANDROID
+            SetDeviceParamertersFromURL(url);
+            LoadDeviceParamCallback(true);
             #endif
-        }
 
-        public static void DeRegisterObserver()
-        {
-            #if NATIVE_PLUGIN_EXIST && UNITY_IOS
-            deRegisterObserver();
             #endif
         }
 

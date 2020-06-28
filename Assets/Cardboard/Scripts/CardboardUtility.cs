@@ -7,7 +7,14 @@ namespace MobfishCardboard
 {
     public static class CardboardUtility
     {
+        #if UNITY_IOS
         public const string DLLName = "__Internal";
+        public const string DLLName_UNITYJNI = "__Internal";
+        #elif UNITY_ANDROID
+        public const string DLLName = "cardboard_api";
+        public const string DLLName_UNITYJNI = "cardboard_unity_jni";
+        #endif
+
 
         public const int kResolution = 40;
         public const string KEY_CARDBOARD_CAMERA_SCANNED = "mobfishCardboardCamScanned";
@@ -148,7 +155,7 @@ namespace MobfishCardboard
         {
             int length = 16;
 
-            float[] target=new float[length];
+            float[] target = new float[length];
 
             for (int i = 0; i < length; i++)
             {

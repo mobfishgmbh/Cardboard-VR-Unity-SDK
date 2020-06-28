@@ -32,6 +32,11 @@ namespace MobfishCardboard
         {
             if (!initiated)
             {
+                #if UNITY_ANDROID
+                CardboardAndroidInitialization.InitAndroid();
+
+                #endif
+
                 CardboardHeadTracker.CreateTracker();
                 CardboardHeadTracker.ResumeTracker();
 
@@ -39,6 +44,7 @@ namespace MobfishCardboard
                 Application.quitting += ApplicationQuit;
                 initiated = true;
             }
+
             RefreshParameters();
         }
 
@@ -125,10 +131,20 @@ namespace MobfishCardboard
                 par = CardboardQrCode.GetDeviceParamsPointer();
             }
 
-            deviceParameter = CardboardQrCode.GetDecodedDeviceParams();
-            //todo do we need to destroy it before create it?
-            CardboardLensDistortion.CreateLensDistortion(par.Item1, par.Item2);
-            profileAvailable = true;
+            // if (par.Item2 == 0 && !Application.isEditor)
+            // {
+            //     CardboardQrCode.RetrieveCardboardDeviceV1Params();
+            //     par = CardboardQrCode.GetDeviceParamsPointer();
+            // }
+
+            if (par.Item2 > 0)
+            {
+                deviceParameter = CardboardQrCode.GetDecodedDeviceParams();
+                //todo do we need to destroy it before create it?
+
+                CardboardLensDistortion.CreateLensDistortion(par.Item1, par.Item2);
+                profileAvailable = true;
+            }
         }
 
         private static void InitCameraProperties()
