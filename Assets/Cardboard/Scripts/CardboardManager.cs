@@ -137,7 +137,7 @@ namespace MobfishCardboard
             //     par = CardboardQrCode.GetDeviceParamsPointer();
             // }
 
-            if (par.Item2 > 0)
+            if (par.Item2 > 0 || Application.isEditor)
             {
                 deviceParameter = CardboardQrCode.GetDecodedDeviceParams();
                 //todo do we need to destroy it before create it?
