@@ -159,6 +159,7 @@ PlayerSettings:
   applicationIdentifier:
     Android: net.mobfish.cardboard
     iOS: net.mobfish.cardboard
+    iPhone: net.mobfish.cardboard
   buildNumber: {}
   AndroidBundleVersionCode: 1
   AndroidMinSdkVersion: 23
