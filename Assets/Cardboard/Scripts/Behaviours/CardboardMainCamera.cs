@@ -89,11 +89,12 @@ namespace MobfishCardboard
 
         private void SetupEyeRenderTextureDescription()
         {
+            Vector2Int resolution = CardboardUtility.GetAdjustedScreenResolution();
             eyeRenderTextureDesc = new RenderTextureDescriptor()
             {
                 dimension = TextureDimension.Tex2D,
-                width = Screen.width / 2,
-                height = Screen.height,
+                width = resolution.x / 2,
+                height = resolution.y,
                 depthBufferBits = 16,
                 volumeDepth = 1,
                 msaaSamples = 1,
@@ -101,7 +102,6 @@ namespace MobfishCardboard
             };
 
             #if UNITY_2019_1_OR_NEWER
-
             eyeRenderTextureDesc.graphicsFormat = SystemInfo.GetGraphicsFormat(DefaultFormat.LDR);
             Debug.LogFormat("CardboardMainCamera.SetupEyeRenderTextureDescription(), graphicsFormat={0}",
                 eyeRenderTextureDesc.graphicsFormat);
