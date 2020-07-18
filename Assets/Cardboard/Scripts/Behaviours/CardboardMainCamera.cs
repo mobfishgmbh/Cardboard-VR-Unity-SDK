@@ -38,10 +38,7 @@ namespace MobfishCardboard
 
         private void Awake()
         {
-            #if UNITY_IOS
             Application.targetFrameRate = 60;
-
-            #endif
 
             if (dontDestroyAndSingleton)
             {
