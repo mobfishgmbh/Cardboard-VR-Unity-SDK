@@ -23,7 +23,10 @@ namespace MobfishCardboard
         private static readonly Matrix4x4 flipZ = Matrix4x4.Scale(new Vector3(1, 1, -1));
 
         private static IntPtr _headTracker;
-        private static Gyroscope gyro;
+
+        #if !UNITY_2019_1_OR_NEWER || ENABLE_LEGACY_INPUT_MANAGER
+        private static UnityEngine.Gyroscope gyro;
+        #endif
 
         public static Vector3 trackerRawPosition { get; private set; }
         public static Quaternion trackerRawRotation { get; private set; }
@@ -109,8 +112,13 @@ namespace MobfishCardboard
 
         public static void CreateTracker()
         {
+            #if !UNITY_2019_1_OR_NEWER || ENABLE_LEGACY_INPUT_MANAGER
+
             Input.gyro.enabled = true;
             gyro = Input.gyro;
+
+            #endif
+
             _headTracker = CardboardHeadTracker_create();
             Init();
         }
@@ -153,11 +161,15 @@ namespace MobfishCardboard
 
         private static void UpdatePoseGyro()
         {
+            #if !UNITY_2019_1_OR_NEWER || ENABLE_LEGACY_INPUT_MANAGER
+
             trackerRawPosition = trackerUnityPosition = Vector3.zero;
-            trackerRawRotation = gyro.attitude;
+            trackerRawRotation = gyro?.attitude ?? Quaternion.identity;
             Quaternion rawConvert = new Quaternion(trackerRawRotation.x, trackerRawRotation.y, -trackerRawRotation.z,
                 -trackerRawRotation.w);
             trackerUnityRotation = Quaternion.Euler(90, 0, 0) * rawConvert;
+
+            #endif
         }
 
         public static void RecenterCamera(bool horizontalOnly = true)
