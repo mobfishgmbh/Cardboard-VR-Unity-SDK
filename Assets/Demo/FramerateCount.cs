@@ -7,8 +7,6 @@ public class FramerateCount: MonoBehaviour
 {
     public static string fpsString { get; private set; }
 
-    private float deltaTime = 0;
-
     void Update()
     {
         float fps = 1.0f / Time.deltaTime;
