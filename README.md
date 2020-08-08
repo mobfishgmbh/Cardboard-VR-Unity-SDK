@@ -2,19 +2,22 @@ mobfish Unity Cardboard SDK
 ==============
 Copyright 2020 [mobfish GmbH](https://mobfish.net/?utm_source=Web&utm_medium=Open-Source-Project&utm_content=Textlink&utm_campaign=iOS-Cardboard).
 
-This is a work-in-progress unofficial Google Cardboard Unity SDK, implemented from new Google Cardboard open source project.
+This is an unofficial Google Cardboard Unity SDK, implemented from new Google Cardboard open source project.
 
-This project is in release candidate stage, it should be production ready now. Feel free to make tickets if there is any bugs, and do Pull Requests if you have some suggestions for feature or bug fix.
+This project is released, it is production ready now.   
+Feel free to make tickets if there is any bugs, and do Pull Requests if you have some suggestions for feature or bug fix.
 
 Official Google Cardboard SDK:  
 https://github.com/googlevr/cardboard
 
-## Features (For now)
+## Features
 
 - Cardboard View on smartphone
+- Support Unity 2018 LTS and 2019 LTS
 - Simple, independent package
 - iOS and Android support
-- OpenGL ES 3.0 and Metal(iOS) and Vulcan(Android) Support (as well as OpenGL ES 2.0)
+- OpenGL ES 3.0 and Metal(iOS) and Vulkan(Android) Support (as well as OpenGL ES 2.0)
+- Default Render Pipeline and Scriptable Render Pipeline (URP, HDRP) support.
 - Ability to set cardboard profile in script
 - Switch between vr and no-vr mode (magic window)
 
