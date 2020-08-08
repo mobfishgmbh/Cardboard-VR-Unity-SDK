@@ -190,5 +190,17 @@ namespace MobfishCardboard
                 rotation = Quaternion.LookRotation(transformMatrix.GetColumn(2), transformMatrix.GetColumn(1))
             };
         }
+
+        public static Vector2Int GetAdjustedScreenResolution()
+        {
+            if (Screen.width >= Screen.height)
+            {
+                return new Vector2Int(Screen.width, Screen.height);
+            }
+            else
+            {
+                return new Vector2Int(Screen.height, Screen.width);
+            }
+        }
     }
 }
