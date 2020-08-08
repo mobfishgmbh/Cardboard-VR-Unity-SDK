@@ -40,9 +40,10 @@ namespace MobfishCardboardDemo
         // Update is called once per frame
         void Update()
         {
-            debugText.text = string.Format("device rot={0}, \r\nUnity rot={1}",
+            debugText.text = string.Format("device rot={0}, \r\nUnity rot={1},\r\nUnity FPS={2}",
                 CardboardHeadTracker.trackerRawRotation.eulerAngles,
-                CardboardHeadTracker.trackerUnityRotation.eulerAngles);
+                CardboardHeadTracker.trackerUnityRotation.eulerAngles,
+                FramerateCount.fpsString);
 
             Pose headPose = CardboardManager.GetHeadPose();
             testHeadFollower.localRotation = headPose.rotation;

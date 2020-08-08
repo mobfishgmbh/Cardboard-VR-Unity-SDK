@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace MobfishCardboard
 {
@@ -12,22 +13,71 @@ namespace MobfishCardboard
         [SerializeField]
         private Material eyeMaterialRight;
 
+        private bool srpInUse;
         private Camera postCam;
 
         private void Awake()
         {
             postCam = GetComponent<Camera>();
             postCam.projectionMatrix = Matrix4x4.Ortho(-1, 1, -1, 1, -0.1f, 0.5f);
+            srpInUse = GraphicsSettings.renderPipelineAsset != null;
         }
 
-        // Start is called before the first frame update
-        void Start()
+        private void Start()
+        {
+            if (srpInUse)
+            {
+                Debug.Log("CardboardPostCamera, current RenderPipeline = " +
+                    GraphicsSettings.renderPipelineAsset?.GetType().ToString());
+            }
+        }
+
+        private void OnEnable()
         {
             ApplyRenderTexture();
             CardboardManager.renderTextureResetEvent += ApplyRenderTexture;
+
+            if (srpInUse)
+            {
+                #if UNITY_2019_1_OR_NEWER
+                RenderPipelineManager.endCameraRendering += OnSrpCameraPostRender;
+                #endif
+            }
+            else
+            {
+                Camera.onPostRender += OnCameraPostRender;
+            }
         }
 
-        private void OnPostRender()
+        private void OnDisable()
+        {
+            CardboardManager.renderTextureResetEvent -= ApplyRenderTexture;
+
+            if (srpInUse)
+            {
+                #if UNITY_2019_1_OR_NEWER
+                RenderPipelineManager.endCameraRendering -= OnSrpCameraPostRender;
+                #endif
+            }
+            else
+            {
+                Camera.onPostRender -= OnCameraPostRender;
+            }
+        }
+
+        #if UNITY_2019_1_OR_NEWER
+        private void OnSrpCameraPostRender(ScriptableRenderContext context, Camera givenCamera)
+        {
+            PostEyeRender();
+        }
+        #endif
+
+        private void OnCameraPostRender(Camera cam)
+        {
+            PostEyeRender();
+        }
+
+        private void PostEyeRender()
         {
             if (!CardboardManager.profileAvailable)
                 return;

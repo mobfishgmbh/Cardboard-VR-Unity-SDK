@@ -21,7 +21,6 @@ namespace MobfishCardboard
         [DllImport(CardboardUtility.DLLName)]
         private static extern void CardboardDistortionRenderer_destroy(IntPtr renderer);
 
-        //todo is this correct?
         [DllImport(CardboardUtility.DLLName)]
         private static extern void CardboardDistortionRenderer_setMesh(
             IntPtr renderer, ref CardboardMesh mesh, CardboardEye eye);

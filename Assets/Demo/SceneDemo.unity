@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4465782, g: 0.49641252, b: 0.5748167, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -425,6 +425,7 @@ GameObject:
   - component: {fileID: 539435483}
   - component: {fileID: 539435484}
   - component: {fileID: 539435485}
+  - component: {fileID: 539435486}
   m_Layer: 0
   m_Name: TestGroup
   m_TagString: Untagged
@@ -505,6 +506,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   recenterButton: {fileID: 1809653109}
+--- !u!114 &539435486
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 539435480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3bf7a6c6c6450f4bb9e38ed2b275f09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fpsText: {fileID: 0}
 --- !u!33 &679122516 stripped
 MeshFilter:
   m_CorrespondingSourceObject: {fileID: 6572400263316432975, guid: 8faff49d6a17536468d850633a49d158,
