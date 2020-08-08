@@ -38,7 +38,7 @@ namespace MobfishCardboard
 
         private void Awake()
         {
-            Application.targetFrameRate = 60;
+            Application.targetFrameRate = CardboardUtility.GetTargetFramerate();
 
             if (dontDestroyAndSingleton)
             {
