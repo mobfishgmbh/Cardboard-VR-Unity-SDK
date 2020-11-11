@@ -23,6 +23,13 @@ namespace MobfishCardboardDemo
         // Start is called before the first frame update
         void Start()
         {
+            StartCoroutine(DelaySetClip());
+        }
+
+        private IEnumerator DelaySetClip()
+        {
+            yield return new WaitForSeconds(1);
+            CardboardManager.SetCameraNearFarClip(0.01f, 1000);
         }
 
         private void OnEnable()

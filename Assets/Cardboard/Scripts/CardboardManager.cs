@@ -67,6 +67,13 @@ namespace MobfishCardboard
             CardboardQrCode.SetCardboardProfile(url);
         }
 
+        public static void SetCameraNearFarClip(float newNearClip, float newFarClip)
+        {
+            CardboardLensDistortion.SetCamClip(newNearClip, newFarClip);
+            if (initiated)
+                RefreshParameters();
+        }
+
         //This method will set cardbaord profile ONLY when cardboard qr has not yet been scanned by camera.
         //This behaviour is the same as the legacy cardboard gvr_set_default_viewer_profile
         public static void SetCardboardInitialProfile(string url)
