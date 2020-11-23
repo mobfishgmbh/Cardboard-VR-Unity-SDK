@@ -96,7 +96,12 @@ namespace MobfishCardboard
         private static void CardboardLensDistortion_getEyeFromHeadMatrix(IntPtr lens_Distortion, CardboardEye eye,
             float[] eye_from_head_matrix)
         {
-            eye_from_head_matrix.Initialize();
+            Matrix4x4 result;
+            if (eye == CardboardEye.kLeft)
+                result = Matrix4x4.TRS(new Vector3(0.03f, 0, 0), Quaternion.identity, Vector3.one);
+            else
+                result = Matrix4x4.TRS(new Vector3(-0.03f, 0, 0), Quaternion.identity, Vector3.one);
+            CardboardUtility.Matrix4x4ToArray(result).CopyTo(eye_from_head_matrix, 0);
         }
 
         private static void CardboardLensDistortion_getFieldOfView(IntPtr lens_Distortion, CardboardEye eye,
