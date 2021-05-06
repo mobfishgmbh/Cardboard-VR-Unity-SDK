@@ -95,7 +95,7 @@ namespace MobfishCardboard
                 dimension = TextureDimension.Tex2D,
                 width = resolution.x / 2,
                 height = resolution.y,
-                depthBufferBits = 16,
+                depthBufferBits = 24,
                 volumeDepth = 1,
                 msaaSamples = 1,
                 vrUsage = VRTextureUsage.OneEye
